@@ -20,6 +20,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -181,7 +182,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
 
     @Override
     @Transactional
-    //MUST CHECK FOR INVALID STRING INPUT
     public GiftCertificateGetResponse updateDuration(String duration, Long id) {
         int durationValue;
         try{
@@ -196,6 +196,29 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
 
         int updateDuration = giftCertificateRepository.updateDuration(Integer.parseInt(duration), id);
         if(updateDuration == 1) {
+            GiftCertificateEntity giftCertificateEntity = giftCertificateRepository.findById(id).get();
+            return modelMapper.map(giftCertificateEntity, GiftCertificateGetResponse.class);
+        }
+        throw new DataNotFoundException("cannot find gift certificate with id: " + id);
+    }
+
+    @Override
+    @Transactional
+    public GiftCertificateGetResponse updatePrice(String price, Long id) {
+        BigDecimal priceValue;
+        try{
+            priceValue=BigDecimal.valueOf(Double.parseDouble(price));
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Price( "+price+" ) must be numeric");
+        }
+        if(Double.parseDouble(price)<=0){
+            throw new InvalidCertificateException(
+                    "The price ( "+price+" ) must be positive");
+        }
+
+        int updatePrice = giftCertificateRepository.updatePrice(
+                BigDecimal.valueOf(Double.parseDouble(price)), id);
+        if(updatePrice == 1) {
             GiftCertificateEntity giftCertificateEntity = giftCertificateRepository.findById(id).get();
             return modelMapper.map(giftCertificateEntity, GiftCertificateGetResponse.class);
         }

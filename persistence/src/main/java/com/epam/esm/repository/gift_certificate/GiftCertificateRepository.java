@@ -5,6 +5,7 @@ import com.epam.esm.entity.TagEntity;
 import com.epam.esm.repository.CRUDRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -12,6 +13,8 @@ public interface GiftCertificateRepository
         extends CRUDRepository<GiftCertificateEntity, Long>, GiftCertificateQueries {
 
     int updateDuration(int duration, Long id);
+
+    int updatePrice(BigDecimal price, Long id);
 
     List<GiftCertificateEntity> getAllOnly(
             boolean doNameSort,

@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.internal.InheritingConfiguration;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -150,6 +151,17 @@ class GiftCertificateServiceImplTest {
         GiftCertificateGetResponse response = giftCertificateService.updateDuration("10", 1L);
         assertEquals("Data", response.getName());
         assertEquals(1, response.getDuration());
+    }
+
+    @Test
+    void updatePrice() {
+        when(giftCertificateRepository.updatePrice(BigDecimal.valueOf(1.0), 1L)).thenReturn(1);
+        when(giftCertificateRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(modelMapper.map(entity, GiftCertificateGetResponse.class)).thenReturn(getResponse);
+
+        GiftCertificateGetResponse response = giftCertificateService.updatePrice("1.0", 1L);
+        assertEquals("Data", response.getName());
+        assertEquals(BigDecimal.valueOf(1), response.getPrice());
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,8 +64,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
                 .setParameter("time", LocalDateTime.now())
                 .executeUpdate();
     }
-
-
+    @Override
+    public int updatePrice(BigDecimal price, Long id) {
+        return entityManager.createNativeQuery(
+                        UPDATE_PRICE)
+                .setParameter("price", price)
+                .setParameter("id", id)
+                .setParameter("time", LocalDateTime.now())
+                .executeUpdate();
+    }
     @Override
     public List<GiftCertificateEntity> searchWithMultipleTags(List<TagEntity> tags, int limit, int offset) {
         return entityManager.createQuery(SEARCH_WITH_MULTIPLE_TAGS, GiftCertificateEntity.class)

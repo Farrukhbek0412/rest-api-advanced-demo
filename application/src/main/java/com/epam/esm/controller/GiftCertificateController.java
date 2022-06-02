@@ -118,6 +118,16 @@ public class GiftCertificateController {
         return ResponseEntity.ok(new BaseResponse<>(200, "duration updated", response));
     }
 
+    @PatchMapping(value = "/update/price", produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> updatePrice(
+            @RequestParam String price,
+            @RequestParam Long id
+    ) {
+        GiftCertificateGetResponse response = giftCertificateService.updatePrice(price, id);
+        accept(response);
+        return ResponseEntity.ok(new BaseResponse<>(200, "price updated", response));
+    }
+
     private static void accept(GiftCertificateGetResponse certificate) {
         certificate.add(linkTo(methodOn(OrderController.class)
                 .getOrdersByCertificate(certificate.getId(), 50, 0))
