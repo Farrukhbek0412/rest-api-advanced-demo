@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -70,4 +71,16 @@ public class TagController {
         List<TagGetResponse> mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser(userId);
         return ResponseEntity.ok(new BaseResponse<>(200, "tag", mostWidelyUsedTagsOfUser));
     }
+
+//    @RequestMapping("/add_tags")
+//    public String add(){
+//        try {
+//            tagService.addTags();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return "finished";
+//    }
+
+
 }

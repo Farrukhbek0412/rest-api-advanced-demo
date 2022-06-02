@@ -133,4 +133,12 @@ public class GiftCertificateController {
                 .getOrdersByCertificate(certificate.getId(), 50, 0))
                 .withRel("orders"));
     }
+
+//    @RequestMapping("/create_order")
+//    public String add(
+//            @RequestParam int offset
+//    ){
+//        giftCertificateService.createManualOrder(offset);
+//        return "finished";
+//    }
 }

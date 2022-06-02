@@ -19,6 +19,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificatePostR
     GiftCertificateGetResponse updateDuration(String duration, Long id);
     GiftCertificateGetResponse updatePrice(String price, Long id);
 
+    //void createManualOrder(int offset);
+
     List<GiftCertificateGetResponse> searchWithMultipleTags(List<String> tags, int limit, int offset);
 
 }

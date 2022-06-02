@@ -2,7 +2,7 @@ package com.epam.esm.repository.gift_certificate;
 
 public interface GiftCertificateQueries {
 
-    String GET_ALL = "select * from gift_certificate gc";
+    String GET_ALL = "select gc from GiftCertificateEntity gc";
     String DELETE = "delete from GiftCertificateEntity where id = :id";
     String UPDATE_DURATION = "update gift_certificate set duration = :duration,last_update_date= :time where id = :id";
 
@@ -29,5 +29,6 @@ public interface GiftCertificateQueries {
     String ORDER_DATE_DESC = " order by gc.create_date desc";
     String ORDER_DATE = " order by gc.create_date";
     String NO_ORDER = "";
+
 
 }

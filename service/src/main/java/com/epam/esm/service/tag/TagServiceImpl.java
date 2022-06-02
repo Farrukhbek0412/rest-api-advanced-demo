@@ -11,6 +11,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,4 +68,24 @@ public class TagServiceImpl implements TagService{
             throw new DataNotFoundException("this user haven't used any tags");
         return modelMapper.map(mostWidelyUserTagsOfUser, new TypeToken<List<TagGetResponse>>() {}.getType());
     }
+
+//    @Override
+//    @Transactional
+//    public void addTags() throws IOException {
+//        File file = new File("D:\\Новая папка\\tags.txt");
+//
+//        BufferedReader br
+//                = new BufferedReader(new FileReader(file));
+//
+//        // Declaring a string variable
+//        String st;
+//        // Condition holds true till
+//        // there is character in a string
+//        while ((st = br.readLine()) != null){
+//            TagEntity tag = new TagEntity(st);
+//            tagRepository.create(tag);
+//        }
+//    }
+
+
 }

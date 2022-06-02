@@ -17,6 +17,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
     @PersistenceContext
     private EntityManager entityManager;
 
+
+
     @Override
     public GiftCertificateEntity create(GiftCertificateEntity certificate) {
         entityManager.persist(certificate);
@@ -73,6 +75,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
                 .setParameter("time", LocalDateTime.now())
                 .executeUpdate();
     }
+
     @Override
     public List<GiftCertificateEntity> searchWithMultipleTags(List<TagEntity> tags, int limit, int offset) {
         return entityManager.createQuery(SEARCH_WITH_MULTIPLE_TAGS, GiftCertificateEntity.class)

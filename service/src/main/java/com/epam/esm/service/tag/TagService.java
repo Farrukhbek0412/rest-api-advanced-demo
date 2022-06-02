@@ -5,6 +5,7 @@ import com.epam.esm.dto.request.TagPostRequest;
 import com.epam.esm.service.BaseService;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -12,4 +13,6 @@ public interface TagService extends BaseService<TagPostRequest, TagGetResponse> 
     List<TagGetResponse> getAll(int limit, int offset);
 
     List<TagGetResponse> getMostWidelyUsedTagsOfUser(Long userId);
+
+   // void addTags() throws IOException;
 }

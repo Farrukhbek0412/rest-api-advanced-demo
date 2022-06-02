@@ -4,13 +4,17 @@ import com.epam.esm.dto.response.GiftCertificateGetResponse;
 import com.epam.esm.dto.request.GiftCertificatePostRequest;
 import com.epam.esm.dto.request.GiftCertificateUpdateRequest;
 import com.epam.esm.entity.GiftCertificateEntity;
+import com.epam.esm.entity.OrderEntity;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.BreakingDataRelationshipException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.exception.tag.InvalidTagException;
 import com.epam.esm.repository.gift_certificate.GiftCertificateRepository;
+import com.epam.esm.repository.order.OrderRepository;
 import com.epam.esm.repository.tag.TagRepository;
+import com.epam.esm.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -20,17 +24,20 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService{
     private final GiftCertificateRepository giftCertificateRepository;
+
+    private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
+    private final OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -256,4 +263,27 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
         });
         return tagEntityList;
     }
+
+//    @Override
+//    @Transactional
+//    public void createManualOrder(int offset){
+//        List<GiftCertificateEntity> gifts = giftCertificateRepository.getAll(1000,offset);
+//        List<UserEntity> users = userRepository.getAll(1002,0);
+//
+//        for (GiftCertificateEntity gift: gifts) {
+//            Set<Integer>  indexUsers = new HashSet<>();
+//            int random = (int) (Math.random() * 10);
+//            for (int j = 0; j <random; j++) {
+//                indexUsers.add((int) (Math.random()*1002));
+//            }
+//
+//            for (Integer i : indexUsers) {
+//                OrderEntity order = new OrderEntity();
+//                order.setPrice(gift.getPrice());
+//                order.setCertificate(gift);
+//                order.setUser(users.get(i));
+//                orderRepository.create(order);
+//            }
+//        }
+//    }
 }
