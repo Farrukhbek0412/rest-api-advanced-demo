@@ -6,7 +6,6 @@ import com.epam.esm.dto.request.GiftCertificateUpdateRequest;
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
 import com.epam.esm.exception.BreakingDataRelationshipException;
-import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.repository.gift_certificate.GiftCertificateRepository;
 import com.epam.esm.repository.tag.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
