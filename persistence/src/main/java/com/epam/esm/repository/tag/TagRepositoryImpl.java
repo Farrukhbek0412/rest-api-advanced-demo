@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.esm.repository.gift_certificate.GiftCertificateQueries.DELETE;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
@@ -25,11 +25,11 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<TagEntity> getAll(int limit, int offset) {
+    public List<TagEntity> getAll(int pageSize, int pageNo) {
         return entityManager
                 .createQuery(GET_ALL, TagEntity.class)
-                .setMaxResults(limit)
-                .setFirstResult(offset)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageNo - 1) * pageSize)
                 .getResultList();
     }
 
@@ -65,9 +65,17 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<TagEntity> getMostWidelyUsedTagOfUser(Long userId) {
-        return entityManager.createNativeQuery(GET_MOST_USED_TAG_OF_USER, TagEntity.class)
-                .setParameter("userId", userId)
+    public List<TagEntity> getMostWidelyUsedTagOfUser() {
+
+        List resultList = entityManager.createNativeQuery(GET_MOST_USED_TAG_OF_USER, TagEntity.class)
                 .getResultList();
+        return resultList;
+    }
+
+    @Override
+    public BigInteger getCountOfMostWidelyUsedTagCount() {
+        BigInteger a = (BigInteger) entityManager.createNativeQuery(COUNT)
+                .getResultList().get(0);
+        return a;
     }
 }

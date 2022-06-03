@@ -21,8 +21,6 @@ import javax.validation.constraints.Positive;
 public class UserEntity extends BaseEntity{
 
     private String name;
-//    @Positive(message = "age must be positive")
-//    @Min(message = "user under 18 years old cannot use our system", value = 18)
     private int age;
     private String email;
     private String password;

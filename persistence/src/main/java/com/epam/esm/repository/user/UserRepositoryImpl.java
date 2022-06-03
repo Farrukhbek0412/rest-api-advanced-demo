@@ -24,10 +24,10 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public List<UserEntity> getAll(int limit, int offset) {
+    public List<UserEntity> getAll(int pageSize, int pageNo) {
         return entityManager.createQuery(GET_ALL, UserEntity.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageSize)
                 .getResultList();
 
     }

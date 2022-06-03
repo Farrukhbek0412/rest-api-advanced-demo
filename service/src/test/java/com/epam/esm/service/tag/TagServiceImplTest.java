@@ -1,9 +1,9 @@
 package com.epam.esm.service.tag;
 
+import com.epam.esm.dto.response.MostUsedTagResponse;
 import com.epam.esm.dto.response.TagGetResponse;
 import com.epam.esm.dto.request.TagPostRequest;
 import com.epam.esm.entity.TagEntity;
-import com.epam.esm.exception.BreakingDataRelationshipException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.repository.tag.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ class TagServiceImplTest {
         tag.setName("test tag");
 
         tagGetResponse = new TagGetResponse();
-        tagGetResponse.setName("test response tag ");
+        tagGetResponse.setName("java");
 
         tagPostRequest = new TagPostRequest();
         tagPostRequest.setName("test post tag ");
@@ -101,11 +102,15 @@ class TagServiceImplTest {
     @Test
     void canGetMostWidelyUsedTagsOfUser(){
         List<TagEntity> tagEntities = getTagEntities();
-        when(tagRepository.getMostWidelyUsedTagOfUser(1L)).thenReturn(tagEntities);
+        List<TagGetResponse> tagGetResponses = getTagGetResponses();
+        when(tagRepository.getMostWidelyUsedTagOfUser()).thenReturn(tagEntities);
         when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>() {}.getType()))
-                .thenReturn(getTagGetResponses());
-        List<TagGetResponse> mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser(1L);
-        assertEquals(5, mostWidelyUsedTagsOfUser.size());
+                .thenReturn(tagGetResponses);
+        when(tagRepository.getCountOfMostWidelyUsedTagCount()).thenReturn(BigInteger.ONE);
+
+        MostUsedTagResponse mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser();
+        assertEquals(tagGetResponses, mostWidelyUsedTagsOfUser.getTags());
+        assertEquals(BigInteger.ONE,mostWidelyUsedTagsOfUser.getCount());
     }
 
 

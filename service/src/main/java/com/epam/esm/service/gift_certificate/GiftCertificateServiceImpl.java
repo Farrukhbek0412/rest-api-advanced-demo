@@ -4,17 +4,13 @@ import com.epam.esm.dto.response.GiftCertificateGetResponse;
 import com.epam.esm.dto.request.GiftCertificatePostRequest;
 import com.epam.esm.dto.request.GiftCertificateUpdateRequest;
 import com.epam.esm.entity.GiftCertificateEntity;
-import com.epam.esm.entity.OrderEntity;
 import com.epam.esm.entity.TagEntity;
-import com.epam.esm.entity.UserEntity;
 import com.epam.esm.exception.BreakingDataRelationshipException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.exception.tag.InvalidTagException;
 import com.epam.esm.repository.gift_certificate.GiftCertificateRepository;
-import com.epam.esm.repository.order.OrderRepository;
 import com.epam.esm.repository.tag.TagRepository;
-import com.epam.esm.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -24,8 +20,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -34,10 +28,8 @@ import java.util.*;
 public class GiftCertificateServiceImpl implements GiftCertificateService{
     private final GiftCertificateRepository giftCertificateRepository;
 
-    private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
-    private final OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -111,23 +103,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
     @Transactional
     public List<GiftCertificateGetResponse> getAll(
             String searchWord, String tagName, boolean doNameSort, boolean doDateSort,
-            boolean isDescending, int limit, int offset) {
+            boolean isDescending, int pageSize, int pageNo) {
         List<GiftCertificateEntity> certificateEntities;
-        if(tagName != null) {
+        if(!tagName.isEmpty()) {
             try {
                 Long tagId = tagRepository.findByName(tagName).getId();
                 certificateEntities = giftCertificateRepository.getAllWithSearchAndTagName(
-                        searchWord, tagId, doNameSort, doDateSort, isDescending, limit, offset);
+                        searchWord, tagId, doNameSort, doDateSort, isDescending, pageSize, pageNo);
             }catch (NullPointerException e){
                 throw new DataNotFoundException("Gift certificate ( tag name = "  + tagName+ " ) not found");
             }
         }else if(searchWord.equals("")){
             certificateEntities = giftCertificateRepository.getAllOnly(
-                    doNameSort, doDateSort, isDescending, limit, offset);
+                    doNameSort, doDateSort, isDescending, pageSize, pageNo);
         }else
             certificateEntities = giftCertificateRepository.getAllWithSearch(
-                    searchWord, doNameSort, doDateSort, isDescending, limit, offset);
-        if(certificateEntities.size() == 0)
+                    searchWord, doNameSort, doDateSort, isDescending, pageSize, pageNo);
+        if(certificateEntities.isEmpty())
             throw new DataNotFoundException("no matching gift certificate found");
         return modelMapper.map(certificateEntities, new TypeToken<List<GiftCertificateGetResponse>>() {}.getType());
     }
@@ -264,26 +256,4 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
         return tagEntityList;
     }
 
-//    @Override
-//    @Transactional
-//    public void createManualOrder(int offset){
-//        List<GiftCertificateEntity> gifts = giftCertificateRepository.getAll(1000,offset);
-//        List<UserEntity> users = userRepository.getAll(1002,0);
-//
-//        for (GiftCertificateEntity gift: gifts) {
-//            Set<Integer>  indexUsers = new HashSet<>();
-//            int random = (int) (Math.random() * 10);
-//            for (int j = 0; j <random; j++) {
-//                indexUsers.add((int) (Math.random()*1002));
-//            }
-//
-//            for (Integer i : indexUsers) {
-//                OrderEntity order = new OrderEntity();
-//                order.setPrice(gift.getPrice());
-//                order.setCertificate(gift);
-//                order.setUser(users.get(i));
-//                orderRepository.create(order);
-//            }
-//        }
-//    }
 }

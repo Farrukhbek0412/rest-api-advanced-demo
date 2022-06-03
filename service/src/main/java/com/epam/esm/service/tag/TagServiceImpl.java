@@ -1,5 +1,6 @@
 package com.epam.esm.service.tag;
 
+import com.epam.esm.dto.response.MostUsedTagResponse;
 import com.epam.esm.dto.response.TagGetResponse;
 import com.epam.esm.dto.request.TagPostRequest;
 import com.epam.esm.entity.TagEntity;
@@ -11,7 +12,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,8 @@ public class TagServiceImpl implements TagService{
         if(createdTag != null) {
             return modelMapper.map(createdTag, TagGetResponse.class);
         }
-        throw new DataAlreadyExistException("This tag ( name: " + createdTag.getName() + " ) already exists");
+        throw new DataAlreadyExistException("This tag ( name: " +
+                createdTag.getName() + " ) already exists");
     }
 
     @Override
@@ -62,30 +64,18 @@ public class TagServiceImpl implements TagService{
     }
 
     @Override
-    public List<TagGetResponse> getMostWidelyUsedTagsOfUser(Long userId) {
-        List<TagEntity> mostWidelyUserTagsOfUser = tagRepository.getMostWidelyUsedTagOfUser(userId);
+    public MostUsedTagResponse getMostWidelyUsedTagsOfUser() {
+        List<TagEntity> mostWidelyUserTagsOfUser = tagRepository.getMostWidelyUsedTagOfUser();
+        BigInteger count = tagRepository.getCountOfMostWidelyUsedTagCount();
         if(mostWidelyUserTagsOfUser.isEmpty())
             throw new DataNotFoundException("this user haven't used any tags");
-        return modelMapper.map(mostWidelyUserTagsOfUser, new TypeToken<List<TagGetResponse>>() {}.getType());
+        MostUsedTagResponse mostUsedTagResponse = new MostUsedTagResponse();
+
+        mostUsedTagResponse.setTags(
+                modelMapper.map(mostWidelyUserTagsOfUser, new TypeToken<List<TagGetResponse>>()
+                {}.getType()));
+        mostUsedTagResponse.setCount(count);
+        return mostUsedTagResponse;
     }
-
-//    @Override
-//    @Transactional
-//    public void addTags() throws IOException {
-//        File file = new File("D:\\Новая папка\\tags.txt");
-//
-//        BufferedReader br
-//                = new BufferedReader(new FileReader(file));
-//
-//        // Declaring a string variable
-//        String st;
-//        // Condition holds true till
-//        // there is character in a string
-//        while ((st = br.readLine()) != null){
-//            TagEntity tag = new TagEntity(st);
-//            tagRepository.create(tag);
-//        }
-//    }
-
 
 }

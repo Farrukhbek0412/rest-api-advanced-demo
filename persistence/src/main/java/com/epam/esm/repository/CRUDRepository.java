@@ -19,11 +19,11 @@ public interface CRUDRepository<T, Id>{
 
     /**
      * Gets all existing entities with provided type and provided limit and offset.
-     * @param limit limit of entities
-     * @param offset offset for the entities
+     * @param pageSize count of entities
+     * @param pageNo page for the entities
      * @return list of entities
      */
-    List<T> getAll(int limit, int offset);
+    List<T> getAll(int pageSize, int pageNo);
 
     /**
      * Gets entity with the provided id.

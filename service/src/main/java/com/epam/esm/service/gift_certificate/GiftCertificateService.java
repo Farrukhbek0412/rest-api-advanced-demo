@@ -1,6 +1,5 @@
 package com.epam.esm.service.gift_certificate;
 
-import com.epam.esm.dto.BaseResponse;
 import com.epam.esm.dto.response.GiftCertificateGetResponse;
 import com.epam.esm.dto.request.GiftCertificatePostRequest;
 import com.epam.esm.dto.request.GiftCertificateUpdateRequest;
@@ -11,7 +10,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificatePostR
 
     List<GiftCertificateGetResponse> getAll(
             String searchWord, String tagName, boolean doNameSort, boolean doDateSort,
-            boolean isDescending, int limit, int offset
+            boolean isDescending, int pageSize, int pageNo
     );
 
     GiftCertificateGetResponse update(GiftCertificateUpdateRequest update, Long certificateId);
@@ -19,8 +18,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificatePostR
     GiftCertificateGetResponse updateDuration(String duration, Long id);
     GiftCertificateGetResponse updatePrice(String price, Long id);
 
-    //void createManualOrder(int offset);
-
-    List<GiftCertificateGetResponse> searchWithMultipleTags(List<String> tags, int limit, int offset);
+    List<GiftCertificateGetResponse> searchWithMultipleTags(List<String> tags, int pageSize, int pageNo);
 
 }

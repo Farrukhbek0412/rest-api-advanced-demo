@@ -23,10 +23,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<OrderEntity> getAll(int limit, int offset) {
+    public List<OrderEntity> getAll(int pageSize, int pageNo) {
         return entityManager.createQuery(GET_ALL_ORDERS, OrderEntity.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
@@ -49,12 +49,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<OrderEntity> getOrdersByUserId(Long userId, int limit, int offset) {
+    public List<OrderEntity> getOrdersByUserId(Long userId, int pageSize, int pageNo) {
         return entityManager
                 .createQuery(GET_ORDER_BY_USER_ID, OrderEntity.class)
                 .setParameter("id", userId)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
@@ -73,12 +73,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<OrderEntity> getByCertificateId(Long certificateId, int limit, int offset) {
+    public List<OrderEntity> getByCertificateId(Long certificateId, int pageSize, int pageNo) {
         return entityManager
                 .createQuery(GET_ORDERS_BY_CERTIFICATE_ID, OrderEntity.class)
                 .setParameter("id", certificateId)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 

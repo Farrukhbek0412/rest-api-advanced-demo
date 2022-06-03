@@ -3,7 +3,6 @@ package com.epam.esm.service.user;
 import com.epam.esm.dto.response.UserGetResponse;
 import com.epam.esm.dto.request.UserPostRequest;
 import com.epam.esm.entity.UserEntity;
-import com.epam.esm.exception.BreakingDataRelationshipException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

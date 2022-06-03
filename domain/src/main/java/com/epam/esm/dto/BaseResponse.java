@@ -1,6 +1,8 @@
 package com.epam.esm.dto;
 
-public class BaseResponse <T> {
+import org.springframework.hateoas.RepresentationModel;
+
+public class BaseResponse <T> extends RepresentationModel<BaseResponse<T>> {
 
     private int status;
     private String message;

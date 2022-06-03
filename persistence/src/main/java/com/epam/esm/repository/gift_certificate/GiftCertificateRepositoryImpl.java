@@ -28,11 +28,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
     }
 
     @Override
-    public List<GiftCertificateEntity> getAll(int limit, int offset) {
+    public List<GiftCertificateEntity> getAll(int pageSize, int pageNo) {
         return entityManager
                 .createQuery(GET_ALL, GiftCertificateEntity.class)
-                .setMaxResults(limit)
-                .setFirstResult(offset)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageNo - 1) * pageSize)
                 .getResultList();
     }
 
@@ -77,50 +77,50 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
     }
 
     @Override
-    public List<GiftCertificateEntity> searchWithMultipleTags(List<TagEntity> tags, int limit, int offset) {
+    public List<GiftCertificateEntity> searchWithMultipleTags(List<TagEntity> tags, int pageSize, int pageNo) {
         return entityManager.createQuery(SEARCH_WITH_MULTIPLE_TAGS, GiftCertificateEntity.class)
                 .setParameter("tags", tags)
                 .setParameter("tagCount", (long) tags.size())
-                .setMaxResults(limit)
-                .setFirstResult(offset)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageNo - 1) * pageSize)
                 .getResultList();
     }
 
     @Override
     public List<GiftCertificateEntity> getAllWithSearchAndTagName(
             String searchWord, Long tagId, boolean doNameSort, boolean doDateSort,
-            boolean isDescending, int limit, int offset
+            boolean isDescending, int pageSize, int pageNo
     ){
         String query = GET_ALL_WITH_SEARCH_AND_TAG_NAME + getSorting(doNameSort, doDateSort, isDescending);
-            return entityManager.createNativeQuery(
+            return entityManager.createQuery(
                             query, GiftCertificateEntity.class)
                     .setParameter("searchWord", searchWord)
                     .setParameter("tagId", tagId)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
+                    .setFirstResult((pageNo - 1) * pageSize)
+                    .setMaxResults(pageSize)
                     .getResultList();
     }
 
     @Override
     public List<GiftCertificateEntity> getAllWithSearch(
-            String searchWord, boolean doNameSort, boolean doDateSort, boolean isDescending, int limit, int offset) {
+            String searchWord, boolean doNameSort, boolean doDateSort, boolean isDescending, int pageSize, int pageNo) {
         String query = GET_ALL_WITH_SEARCH + getSorting(doNameSort, doDateSort, isDescending);
-        return entityManager.createNativeQuery(
+        return entityManager.createQuery(
                         query, GiftCertificateEntity.class)
                 .setParameter("searchWord", searchWord)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageSize)
                 .getResultList();
     }
 
     @Override
-    public List<GiftCertificateEntity> getAllOnly(boolean doNameSort, boolean doDateSort, boolean isDescending, int limit, int offset) {
+    public List<GiftCertificateEntity> getAllOnly(boolean doNameSort, boolean doDateSort, boolean isDescending, int pageSize, int pageNo) {
         return entityManager
-                .createNativeQuery(
+                .createQuery(
                         GET_ALL + getSorting(doNameSort, doDateSort, isDescending),
                         GiftCertificateEntity.class)
-                .setMaxResults(limit)
-                .setFirstResult(offset)
+                .setMaxResults(pageSize)
+                .setFirstResult((pageNo - 1) * pageSize)
                 .getResultList();
     }
 }

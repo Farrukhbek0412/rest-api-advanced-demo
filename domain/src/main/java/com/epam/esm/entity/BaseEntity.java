@@ -22,4 +22,13 @@ public class BaseEntity {
     private LocalDateTime createDate;
 
     private LocalDateTime lastUpdateDate;
+
+    public BaseEntity() {
+    }
+
+    public BaseEntity(Long id, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+        this.id = id;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+    }
 }

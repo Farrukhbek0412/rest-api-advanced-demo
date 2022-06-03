@@ -4,6 +4,7 @@ import com.epam.esm.dto.BaseResponse;
 import com.epam.esm.dto.response.UserGetResponse;
 import com.epam.esm.dto.request.UserPostRequest;
 import com.epam.esm.exception.InvalidInputException;
+import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -25,14 +26,21 @@ public class UserController {
 
     @PostMapping(value = "/create",
             produces = {MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            consumes = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<BaseResponse<UserGetResponse>> create(
             @Valid @RequestBody UserPostRequest userPostRequest,
             BindingResult bindingResult){
         if(bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
-        UserGetResponse createdUser = userService.create(userPostRequest);
+        UserGetResponse createdUser;
+        while(true){
+            try{
+                 createdUser= userService.create(userPostRequest);
+                break;
+            }catch (Exception e){
+                continue;
+            }
+        }
         createdUser.add(linkTo(methodOn(OrderController.class)
                 .getOrdersByUser(createdUser.getId(), 50, 0)).withRel("user orders"));
         return ResponseEntity.status(201).body(new BaseResponse<>(200, "user created", createdUser));
@@ -41,8 +49,7 @@ public class UserController {
     @GetMapping(value = "/get",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<UserGetResponse>> get(
-            @RequestParam Long id
-    ){
+            @RequestParam Long id) {
         UserGetResponse response = userService.get(id);
         response.add(linkTo(methodOn(OrderController.class)
                 .getOrdersByUser(response.getId(), 50, 0)).withRel("user orders"));
@@ -52,14 +59,31 @@ public class UserController {
     @GetMapping(value = "/get_all",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<UserGetResponse>>> getAll(
-            @RequestParam(required = false, defaultValue = "10") int limit,
-            @RequestParam(required = false, defaultValue = "0") int offset
-    ){
-        List<UserGetResponse> userList = userService.getAll(limit, offset);
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false, defaultValue = "1") int pageNo) {
+
+
+        if(pageNo<1 || pageSize<0)
+            throw new InvalidCertificateException("Please enter valid number");
+
+        List<UserGetResponse> userList = userService.getAll(pageSize, pageNo);
         userList.forEach(user -> {
             user.add(linkTo(methodOn(OrderController.class)
                     .getOrdersByUser(user.getId(), 50, 0)).withRel("user orders"));
         });
-        return ResponseEntity.ok(new BaseResponse<>(200, "users list", userList));
+
+        BaseResponse<List<UserGetResponse>> response = new BaseResponse<>(
+                200, "users list", userList);
+
+        response.add(linkTo(methodOn(UserController.class)
+                .getAll(pageSize,pageNo + 1))
+                .withRel("next page"));
+
+        if(pageNo > 1 ){
+            response.add(linkTo(methodOn(UserController.class)
+                    .getAll(pageSize,pageNo - 1))
+                    .withRel("previous page"));
+        }
+        return ResponseEntity.ok(response);
     }
 }

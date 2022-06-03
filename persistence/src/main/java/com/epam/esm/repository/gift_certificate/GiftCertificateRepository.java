@@ -20,8 +20,8 @@ public interface GiftCertificateRepository
             boolean doNameSort,
             boolean doDateSort,
             boolean isDescending,
-            int limit,
-            int offset
+            int pageSize,
+            int pageNo
     );
 
     List<GiftCertificateEntity> getAllWithSearchAndTagName(
@@ -30,8 +30,8 @@ public interface GiftCertificateRepository
             boolean doNameSort,
             boolean doDateSort,
             boolean isDescending,
-            int limit,
-            int offset
+            int pageSize,
+            int pageNo
     );
 
     List<GiftCertificateEntity> getAllWithSearch(
@@ -39,15 +39,15 @@ public interface GiftCertificateRepository
             boolean doNameSort,
             boolean doDateSort,
             boolean isDescending,
-            int limit,
-            int offset
+            int pageSize,
+            int pageNo
     );
 
 
     List<GiftCertificateEntity> searchWithMultipleTags(
             List<TagEntity> tags,
-            int limit,
-            int offset
+            int pageSize,
+            int pageNo
     );
 
     default String getSorting(boolean doNameSort, boolean doDateSort, boolean isDescending){

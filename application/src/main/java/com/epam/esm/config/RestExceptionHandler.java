@@ -26,6 +26,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 new BaseExceptionResponse(404, e.getLocalizedMessage(), 50002));
     }
 
+
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<BaseExceptionResponse> psqlExceptionHandler(PSQLException e) {
         return ResponseEntity.status(400).body(

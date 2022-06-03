@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface OrderRepository extends CRUDRepository<OrderEntity, Long>, OrderQueries{
 
-    List<OrderEntity> getOrdersByUserId(Long userId, int limit, int offset);
+    List<OrderEntity> getOrdersByUserId(Long userId, int pageSize, int pageNo);
 
     Optional<OrderEntity> getByUserIdAndOrderId(Long userId, Long orderId);
 
     Optional<OrderEntity> getByUserIdAndCertificateId(Long userId, Long certificateId);
 
-    List<OrderEntity> getByCertificateId(Long certificateId, int limit, int offset);
+    List<OrderEntity> getByCertificateId(Long certificateId, int pageSize, int pageNo);
 }
