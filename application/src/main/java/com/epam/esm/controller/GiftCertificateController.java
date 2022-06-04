@@ -4,6 +4,7 @@ import com.epam.esm.dto.BaseResponse;
 import com.epam.esm.dto.response.GiftCertificateGetResponse;
 import com.epam.esm.dto.request.GiftCertificatePostRequest;
 import com.epam.esm.dto.request.GiftCertificateUpdateRequest;
+import com.epam.esm.dto.response.UserGetResponse;
 import com.epam.esm.exception.InvalidInputException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
@@ -34,7 +35,16 @@ public class GiftCertificateController {
     ) {
         if (bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
-        GiftCertificateGetResponse response = giftCertificateService.create(createCertificate);
+
+        GiftCertificateGetResponse response;
+        while(true){
+            try{
+                response= giftCertificateService.create(createCertificate);
+                break;
+            }catch (Exception e){
+                continue;
+            }
+        }
         accept(response);
         return ResponseEntity.status(201)
                 .body(new BaseResponse<>(201, "certificate created", response));
@@ -166,7 +176,7 @@ public class GiftCertificateController {
 
     private static void accept(GiftCertificateGetResponse certificate) {
         certificate.add(linkTo(methodOn(OrderController.class)
-                .getOrdersByCertificate(certificate.getId(), 50, 0))
+                .getOrdersByCertificate(certificate.getId(), 10, 1))
                 .withRel("orders"));
     }
 

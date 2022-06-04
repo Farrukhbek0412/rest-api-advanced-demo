@@ -92,7 +92,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
             boolean isDescending, int pageSize, int pageNo
     ){
         String query = GET_ALL_WITH_SEARCH_AND_TAG_NAME + getSorting(doNameSort, doDateSort, isDescending);
-            return entityManager.createQuery(
+            return entityManager.createNativeQuery(
                             query, GiftCertificateEntity.class)
                     .setParameter("searchWord", searchWord)
                     .setParameter("tagId", tagId)
@@ -105,7 +105,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository{
     public List<GiftCertificateEntity> getAllWithSearch(
             String searchWord, boolean doNameSort, boolean doDateSort, boolean isDescending, int pageSize, int pageNo) {
         String query = GET_ALL_WITH_SEARCH + getSorting(doNameSort, doDateSort, isDescending);
-        return entityManager.createQuery(
+        return entityManager.createNativeQuery(
                         query, GiftCertificateEntity.class)
                 .setParameter("searchWord", searchWord)
                 .setFirstResult((pageNo - 1) * pageSize)

@@ -150,19 +150,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
         if (StringUtils.isBlank(certificateUpdateRequest.getName())) {
             throw new InvalidCertificateException("Enter name first!");
         }
-
-        if (!NumberUtils.isParsable(String.valueOf(certificateUpdateRequest.getPrice()))) {
-            String price = "";
-            if(certificateUpdateRequest.getPrice()==null){
-                price = "is empty";
-            }else {
-                price = certificateUpdateRequest.getPrice();
-            }
-            throw new InvalidCertificateException("The price " + price + ", not valid");
-        }else if(Integer.parseInt(certificateUpdateRequest.getPrice()) <0){
-            throw new InvalidCertificateException(
-                    "The price ( "+certificateUpdateRequest.getPrice()+" ) can not be negative");
+        if (StringUtils.isBlank(certificateUpdateRequest.getPrice())) {
+            throw new InvalidCertificateException("Enter price first!");
         }
+
+        try{
+            Double price = Double.parseDouble(certificateUpdateRequest.getPrice());
+            if(price <0){
+                throw new InvalidCertificateException(
+                        "The price ( "+certificateUpdateRequest.getPrice()+" ) can not be negative");
+            }
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String");
+        }
+
 
         if (!NumberUtils.isParsable(String.valueOf(certificateUpdateRequest.getDuration()))) {
             String duration = "";
@@ -188,7 +189,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
         }catch(NumberFormatException e){
             throw new InvalidCertificateException("Duration must be numeric");
         }
-        if(Integer.parseInt(duration)<=0){
+        if(durationValue<=0){
             throw new InvalidCertificateException(
                     "The duration ( "+duration+" ) must be positive");
         }
