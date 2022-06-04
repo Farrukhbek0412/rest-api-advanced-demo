@@ -30,7 +30,9 @@ public final class ErrorCodeConstraints {
      * The constant INTERNAL_CODE.
      */
     public static final int INTERNAL_CODE = 50001;
-
+    /**
+     * No arg constructor.
+     */
     private ErrorCodeConstraints() {
     }
 }
