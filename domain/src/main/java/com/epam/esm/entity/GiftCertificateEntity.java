@@ -12,6 +12,10 @@ import javax.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.hibernate.annotations.CascadeType.PERSIST;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
+import static org.hibernate.annotations.CascadeType.MERGE;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,9 +33,9 @@ public class GiftCertificateEntity extends BaseEntity {
     private Integer duration;
 
     @Cascade({
-            org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-            org.hibernate.annotations.CascadeType.MERGE,
-            org.hibernate.annotations.CascadeType.PERSIST
+            SAVE_UPDATE,
+            MERGE,
+            PERSIST
     })
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "certificate_tag",

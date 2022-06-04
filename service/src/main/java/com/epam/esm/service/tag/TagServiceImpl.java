@@ -30,14 +30,20 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public TagGetResponse create(TagPostRequest createTag){
         TagEntity tagEntity = modelMapper.map(createTag, TagEntity.class);
-        TagEntity createdTag = tagRepository.create(tagEntity);
-        if(createdTag != null) {
-            return modelMapper.map(createdTag, TagGetResponse.class);
-        }
-        throw new DataAlreadyExistException("This tag ( name: " +
-                createdTag.getName() + " ) already exists");
-    }
 
+        TagEntity byName = tagRepository.findByName(createTag.getName());
+        if(byName != null){
+            throw new DataAlreadyExistException("This tag ( name: " +
+                    createTag.getName() + " ) already exists");
+        }
+        TagEntity createdTag = tagRepository.create(tagEntity);
+        return modelMapper.map(createdTag, TagGetResponse.class);
+
+
+    }
+void isValid(TagPostRequest createTag){
+
+}
     @Override
     public TagGetResponse get(Long tagId) {
         Optional<TagEntity> tag = tagRepository.findById(tagId);

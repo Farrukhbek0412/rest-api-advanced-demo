@@ -10,6 +10,7 @@ import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.service.gift_certificate.GiftCertificateService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -36,18 +37,9 @@ public class GiftCertificateController {
         if (bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
 
-        GiftCertificateGetResponse response;
-        while(true){
-            try{
-                response= giftCertificateService.create(createCertificate);
-                break;
-            }catch (Exception e){
-                continue;
-            }
-        }
-        accept(response);
-        return ResponseEntity.status(201)
-                .body(new BaseResponse<>(201, "certificate created", response));
+        GiftCertificateGetResponse response = giftCertificateService.create(createCertificate);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BaseResponse<>(HttpStatus.CREATED.value(), "certificate created", response));
     }
 
     @GetMapping(value = "/get", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -56,11 +48,12 @@ public class GiftCertificateController {
             @RequestParam Long id
     ) {
         GiftCertificateGetResponse response = giftCertificateService.get(id);
-        accept(response);
-        return ResponseEntity.ok(new BaseResponse(200, "gift certificate", response));
+        addLinkForOrders(response);
+        return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(),
+                "gift certificate", response));
     }
 
-    @GetMapping(value = "/get_all", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/get-all", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<GiftCertificateGetResponse>>> getAll(
             @RequestParam(required = false, name = "search_word", defaultValue = "") String searchWord,
             @RequestParam(required = false, name = "tag_name", defaultValue = "") String tagName,
@@ -75,15 +68,13 @@ public class GiftCertificateController {
         if (pageNo < 1 || pageSize < 0)
             throw new InvalidCertificateException("Please enter valid number");
         List<GiftCertificateGetResponse> certificates = giftCertificateService.getAll(
-                searchWord, tagName, doNameSort, doDateSort, isDescending, pageSize, pageNo
-        );
+                searchWord, tagName, doNameSort, doDateSort, isDescending, pageSize, pageNo);
         for (GiftCertificateGetResponse certificate : certificates) {
-            accept(certificate);
+            addLinkForOrders(certificate);
         }
 
         BaseResponse<List<GiftCertificateGetResponse>> response = new BaseResponse<>(
-                200, "certificate list", certificates
-        );
+                HttpStatus.OK.value(), "certificate list", certificates);
 
         if (!certificates.isEmpty())
             response.add(linkTo(methodOn(GiftCertificateController.class)
@@ -104,18 +95,16 @@ public class GiftCertificateController {
     public ResponseEntity<BaseResponse<List<GiftCertificateGetResponse>>> getWithMultipleTags(
             @RequestParam(value = "tag") List<String> tags,
             @RequestParam(defaultValue = "5") int pageSize,
-            @RequestParam(defaultValue = "1") int pageNo
-    ) {
+            @RequestParam(defaultValue = "1") int pageNo) {
         if (pageNo < 1 || pageSize < 0)
             throw new InvalidCertificateException("Please enter valid number");
         List<GiftCertificateGetResponse> certificates
                 = giftCertificateService.searchWithMultipleTags(tags, pageSize, pageNo);
         for (GiftCertificateGetResponse certificate : certificates) {
-            accept(certificate);
+            addLinkForOrders(certificate);
         }
         BaseResponse<List<GiftCertificateGetResponse>> response = new BaseResponse<>(
-                200, "certificate list", certificates
-        );
+                HttpStatus.OK.value(), "certificate list", certificates);
 
         if (!certificates.isEmpty())
             response.add(linkTo(methodOn(GiftCertificateController.class)
@@ -132,11 +121,10 @@ public class GiftCertificateController {
 
     @DeleteMapping(value = "/delete")
     public ResponseEntity<BaseResponse> delete(
-            @RequestParam Long id
-    ) {
+            @RequestParam Long id) {
         int delete = giftCertificateService.delete(id);
         if (delete == 1)
-            return ResponseEntity.ok(new BaseResponse(204, "certificate deleted", null));
+            return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "certificate deleted", null));
         throw new DataNotFoundException("Certificate ( id = " + id + " ) not found to delete");
     }
 
@@ -145,36 +133,34 @@ public class GiftCertificateController {
     public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> update(
             @Valid @RequestBody GiftCertificateUpdateRequest update,
             BindingResult bindingResult,
-            @RequestParam(value = "id") Long certificateId
-    ) {
+            @RequestParam(value = "id") Long certificateId) {
         if (bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
         GiftCertificateGetResponse response = giftCertificateService.update(update, certificateId);
-        accept(response);
-        return ResponseEntity.ok(new BaseResponse<>(200, "certificate updated", response));
+        addLinkForOrders(response);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                "certificate updated", response));
     }
 
     @PatchMapping(value = "/update/duration", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> updateDuration(
             @RequestParam String duration,
-            @RequestParam Long id
-    ) {
+            @RequestParam Long id) {
         GiftCertificateGetResponse response = giftCertificateService.updateDuration(duration, id);
-        accept(response);
-        return ResponseEntity.ok(new BaseResponse<>(200, "duration updated", response));
+        addLinkForOrders(response);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), "duration updated", response));
     }
 
     @PatchMapping(value = "/update/price", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> updatePrice(
             @RequestParam String price,
-            @RequestParam Long id
-    ) {
+            @RequestParam Long id) {
         GiftCertificateGetResponse response = giftCertificateService.updatePrice(price, id);
-        accept(response);
-        return ResponseEntity.ok(new BaseResponse<>(200, "price updated", response));
+        addLinkForOrders(response);
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), "price updated", response));
     }
 
-    private static void accept(GiftCertificateGetResponse certificate) {
+    private static void addLinkForOrders(GiftCertificateGetResponse certificate) {
         certificate.add(linkTo(methodOn(OrderController.class)
                 .getOrdersByCertificate(certificate.getId(), 10, 1))
                 .withRel("orders"));

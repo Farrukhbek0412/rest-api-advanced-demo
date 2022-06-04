@@ -10,6 +10,7 @@ import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.service.tag.TagService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -37,17 +38,20 @@ public class TagController {
         if (bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
         TagGetResponse response = tagService.create(tag);
-        return ResponseEntity.status(201).body(new BaseResponse<>(201, "tag created", response));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BaseResponse<>(HttpStatus.CREATED.value(),
+                        "tag created", response));
     }
 
     @GetMapping(value = "/get", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<TagGetResponse>> get(
             @RequestParam Long id) {
         TagGetResponse response = tagService.get(id);
-        return ResponseEntity.ok(new BaseResponse<>(200, "success", response));
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                "success", response));
     }
 
-    @GetMapping(value = "/get_all", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/get-all", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<TagGetResponse>>> getAll(
             @RequestParam(required = false, defaultValue = "5") int pageSize,
             @RequestParam(required = false, defaultValue = "1") int pageNo) {
@@ -57,7 +61,7 @@ public class TagController {
             throw new InvalidCertificateException("Please enter valid number");
         List<TagGetResponse> allTags = tagService.getAll(pageSize, pageNo);
         BaseResponse<List<TagGetResponse>> response = new BaseResponse<>(
-                200, "tag list", allTags);
+                HttpStatus.OK.value(), "tag list", allTags);
 
         if (!allTags.isEmpty())
             response.add(linkTo(methodOn(TagController.class)
@@ -77,14 +81,17 @@ public class TagController {
             @RequestParam Long id) {
         int delete = tagService.delete(id);
         if (delete == 1)
-            return ResponseEntity.status(200).body(new BaseResponse(204, "tag deleted", null));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new BaseResponse(HttpStatus.OK.value(),
+                            "tag deleted", null));
         throw new DataNotFoundException("tag  ( id = " + id + " ) not found to delete");
     }
 
     @GetMapping(value = "/getMostUsed")
     public ResponseEntity<BaseResponse<MostUsedTagResponse>> getMostUsed() {
         MostUsedTagResponse mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser();
-        return ResponseEntity.ok(new BaseResponse<>(200, "tag", mostWidelyUsedTagsOfUser));
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                "tag", mostWidelyUsedTagsOfUser));
     }
 
 }

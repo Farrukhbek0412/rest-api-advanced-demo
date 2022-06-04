@@ -7,6 +7,7 @@ import com.epam.esm.exception.InvalidInputException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -32,18 +33,11 @@ public class UserController {
             BindingResult bindingResult){
         if(bindingResult.hasErrors())
             throw new InvalidInputException(bindingResult);
-        UserGetResponse createdUser;
-        while(true){
-            try{
-                 createdUser= userService.create(userPostRequest);
-                break;
-            }catch (Exception e){
-                continue;
-            }
-        }
-        createdUser.add(linkTo(methodOn(OrderController.class)
-                .getOrdersByUser(createdUser.getId(), 50, 0)).withRel("user orders"));
-        return ResponseEntity.status(201).body(new BaseResponse<>(200, "user created", createdUser));
+        UserGetResponse createdUser= userService.create(userPostRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BaseResponse<>(HttpStatus.CREATED.value(),
+                        "user created", createdUser));
     }
 
     @GetMapping(value = "/get",
@@ -51,29 +45,33 @@ public class UserController {
     public ResponseEntity<BaseResponse<UserGetResponse>> get(
             @RequestParam Long id) {
         UserGetResponse response = userService.get(id);
+        //This is a link to get orders of a user
+        //10 is a pageSize
+        //1 is a pageNumber
         response.add(linkTo(methodOn(OrderController.class)
-                .getOrdersByUser(response.getId(), 50, 0)).withRel("user orders"));
-        return ResponseEntity.ok().body(new BaseResponse<>(200, "user details", response));
+                .getOrdersByUser(response.getId(), 10, 1)).withRel("user orders"));
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(),
+                        "user details", response));
     }
 
-    @GetMapping(value = "/get_all",
+    @GetMapping(value = "/get-all",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<UserGetResponse>>> getAll(
             @RequestParam(required = false, defaultValue = "10") int pageSize,
             @RequestParam(required = false, defaultValue = "1") int pageNo) {
-
-
         if(pageNo<1 || pageSize<0)
             throw new InvalidCertificateException("Please enter valid number");
 
         List<UserGetResponse> userList = userService.getAll(pageSize, pageNo);
         userList.forEach(user -> {
             user.add(linkTo(methodOn(OrderController.class)
-                    .getOrdersByUser(user.getId(), 50, 0)).withRel("user orders"));
+                    .getOrdersByUser(user.getId(), 10, 1))
+                    .withRel("user orders"));
         });
 
         BaseResponse<List<UserGetResponse>> response = new BaseResponse<>(
-                200, "users list", userList);
+                HttpStatus.OK.value(), "users list", userList);
 
         response.add(linkTo(methodOn(UserController.class)
                 .getAll(pageSize,pageNo + 1))

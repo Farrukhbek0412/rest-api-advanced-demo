@@ -7,6 +7,7 @@ import com.epam.esm.exception.InvalidInputException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import com.epam.esm.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -35,10 +36,10 @@ public class OrderController {
         OrderGetResponse response = orderService.create(orderPostRequest);
         return ResponseEntity.status(201)
                 .body(new BaseResponse<>(
-                        201, "certificate ordered", response));
+                        HttpStatus.CREATED.value(), "certificate ordered", response));
     }
 
-    @GetMapping(value = "/get/by_user",
+    @GetMapping(value = "/get/by-user",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<OrderGetResponse>>> getOrdersByUser(
             @RequestParam Long id,
@@ -49,7 +50,7 @@ public class OrderController {
             throw new InvalidCertificateException("Please enter valid number");
         List<OrderGetResponse> responses = orderService.getOrdersByUserId(id, pageSize, pageNo);
         BaseResponse<List<OrderGetResponse>> response = new BaseResponse<>(
-                200, "user orders", responses);
+                HttpStatus.OK.value(), "user orders", responses);
 
         if (!responses.isEmpty())
             response.add(linkTo(methodOn(OrderController.class)
@@ -65,7 +66,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/get/by_certificate",
+    @GetMapping(value = "/get/by-certificate",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<BaseResponse<List<OrderGetResponse>>> getOrdersByCertificate(
             @RequestParam Long id,
@@ -78,7 +79,7 @@ public class OrderController {
         List<OrderGetResponse> certificateOrders = orderService.getByCertificateId(id, pageSize, pageNo);
 
         BaseResponse<List<OrderGetResponse>> response = new BaseResponse<>(
-                200, "user orders", certificateOrders);
+                HttpStatus.OK.value(), "user orders", certificateOrders);
 
         if (!certificateOrders.isEmpty())
             response.add(linkTo(methodOn(OrderController.class)
@@ -93,13 +94,14 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/get/by_user_order")
+    @GetMapping(value = "/get/by-user-order")
     public ResponseEntity<BaseResponse<OrderGetResponse>> getOrder(
             @RequestParam Long userId,
             @RequestParam Long orderId
     ) {
         OrderGetResponse order = orderService.getByUserIdAndOrderId(userId, orderId);
-        return ResponseEntity.ok(new BaseResponse<>(200, "order retrieved", order));
+        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
+                "order retrieved", order));
     }
 }
 

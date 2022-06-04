@@ -34,7 +34,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Optional<OrderEntity> findById(Long orderId) {
         OrderEntity orderEntity = entityManager.find(OrderEntity.class, orderId);
         if(orderEntity != null)
-            return Optional.of(orderEntity);
+            return Optional.ofNullable(orderEntity);
         return Optional.empty();
     }
 
