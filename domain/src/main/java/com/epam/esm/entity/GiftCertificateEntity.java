@@ -28,7 +28,6 @@ public class GiftCertificateEntity extends BaseEntity {
 
     private String name;
     private String description;
-    @DecimalMin(message = "price must be positive", value = "0.00")
     private BigDecimal price;
     private Integer duration;
 

@@ -9,6 +9,7 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.List;
 @Getter
 @Setter
 public class GiftCertificatePostRequest {
-    @NotBlank(message = "name can not be null or empty")
+    @NotBlank(message = "name can not be empty")
+    @NotNull(message = "name can not be null")
     private String name;
     @NotBlank(message = "description can not be null or empty")
     private String description;

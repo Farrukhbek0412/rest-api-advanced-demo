@@ -13,7 +13,6 @@ import com.epam.esm.repository.gift_certificate.GiftCertificateRepository;
 import com.epam.esm.repository.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -43,40 +42,42 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
         GiftCertificateEntity saved = giftCertificateRepository.create(certificateEntity);
         return modelMapper.map(saved, GiftCertificateGetResponse.class);
     }
+
     void isValid(GiftCertificatePostRequest certificatePostRequest){
-        if (StringUtils.isBlank(certificatePostRequest.getName())) {
-            throw new InvalidCertificateException("Enter name first!");
+        if(certificatePostRequest.getName().equals("null")){
+            throw new InvalidCertificateException("name can not be null");
+        }
+        if (StringUtils.isBlank(certificatePostRequest.getPrice())) {
+            throw new InvalidCertificateException("Enter price first!");
         }
 
-        if (!NumberUtils.isParsable(String.valueOf(certificatePostRequest.getPrice()))) {
-            String price = "";
-            if(certificatePostRequest.getPrice()==null){
-                price = "is empty";
-            }else {
-                price = certificatePostRequest.getPrice();
+        try{
+            Double price = Double.parseDouble(certificatePostRequest.getPrice());
+            if(price <0){
+                throw new InvalidCertificateException(
+                        "The price ( "+price+" ) can not be negative");
             }
-            throw new InvalidCertificateException("The price " + price + ", not valid");
-        }else if(Integer.parseInt(certificatePostRequest.getPrice()) <0){
-            throw new InvalidCertificateException(
-                    "The price ( "+certificatePostRequest.getPrice()+" ) can not be negative");
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String ("+
+                    certificatePostRequest.getPrice()+" )");
         }
 
-        if (!NumberUtils.isParsable(String.valueOf(certificatePostRequest.getDuration()))) {
-            String duration = "";
-            if(certificatePostRequest.getDuration()==null){
-                duration = "is empty";
-            }else {
-                duration = certificatePostRequest.getDuration();
+        if (StringUtils.isBlank(certificatePostRequest.getDuration())) {
+            throw new InvalidCertificateException("Enter duration first!");
+        }
+
+        try{
+            Integer duration = Integer.parseInt(certificatePostRequest.getDuration());
+            if(duration <=0){
+                throw new InvalidCertificateException(
+                        "The duration ( "+duration+" ) must be positive");
             }
-            throw new InvalidCertificateException("The duration " + duration + ", not valid");
-        }else if(Integer.parseInt(certificatePostRequest.getDuration()) <=0){
-            throw new InvalidCertificateException(
-                    "The duration ( "+certificatePostRequest.getDuration()+" ) must be positive");
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String ("+
+                    certificatePostRequest.getDuration()+" )");
         }
 
     }
-
-
 
     @Override
     @Transactional
@@ -158,42 +159,45 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
             Double price = Double.parseDouble(certificateUpdateRequest.getPrice());
             if(price <0){
                 throw new InvalidCertificateException(
-                        "The price ( "+certificateUpdateRequest.getPrice()+" ) can not be negative");
+                        "The price ( "+price+" ) can not be negative");
             }
         }catch(NumberFormatException e){
-            throw new InvalidCertificateException("Do not enter String");
+            throw new InvalidCertificateException("Do not enter String ("+
+                    certificateUpdateRequest.getPrice()+" )");
         }
 
+        if (StringUtils.isBlank(certificateUpdateRequest.getDuration())) {
+            throw new InvalidCertificateException("Enter duration first!");
+        }
 
-        if (!NumberUtils.isParsable(String.valueOf(certificateUpdateRequest.getDuration()))) {
-            String duration = "";
-            if(certificateUpdateRequest.getDuration()==null){
-                duration = "is empty";
-            }else {
-                duration = certificateUpdateRequest.getDuration();
+        try{
+            Integer duration = Integer.parseInt(certificateUpdateRequest.getDuration());
+            if(duration <=0){
+                throw new InvalidCertificateException(
+                        "The duration ( "+duration+" ) must be positive");
             }
-            throw new InvalidCertificateException("The duration " + duration + ", not valid");
-        }else if(Integer.parseInt(certificateUpdateRequest.getDuration()) <=0){
-            throw new InvalidCertificateException(
-                    "The duration ( "+certificateUpdateRequest.getDuration()+" ) must be positive");
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String ("+
+                    certificateUpdateRequest.getDuration()+" )");
         }
-
     }
 
     @Override
     @Transactional
     public GiftCertificateGetResponse updateDuration(String duration, Long id) {
-        int durationValue;
-        try{
-            durationValue=Integer.parseInt(duration);
-        }catch(NumberFormatException e){
-            throw new InvalidCertificateException("Duration must be numeric");
-        }
-        if(durationValue<=0){
-            throw new InvalidCertificateException(
-                    "The duration ( "+duration+" ) must be positive");
+        if (StringUtils.isBlank(duration)) {
+            throw new InvalidCertificateException("Enter duration first!");
         }
 
+        try{
+            Integer durationCheck = Integer.parseInt(duration);
+            if(durationCheck <=0){
+                throw new InvalidCertificateException(
+                        "The duration ( "+duration+" ) must be positive");
+            }
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String ("+duration+" )");
+        }
         int updateDuration = giftCertificateRepository.updateDuration(Integer.parseInt(duration), id);
         if(updateDuration == 1) {
             GiftCertificateEntity giftCertificateEntity = giftCertificateRepository.findById(id).get();
@@ -205,15 +209,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
     @Override
     @Transactional
     public GiftCertificateGetResponse updatePrice(String price, Long id) {
-        BigDecimal priceValue;
-        try{
-            priceValue=BigDecimal.valueOf(Double.parseDouble(price));
-        }catch(NumberFormatException e){
-            throw new InvalidCertificateException("Price( "+price+" ) must be numeric");
+        if (StringUtils.isBlank(price)) {
+            throw new InvalidCertificateException("Enter price first!");
         }
-        if(Double.parseDouble(price)<=0){
-            throw new InvalidCertificateException(
-                    "The price ( "+price+" ) must be positive");
+        try{
+            Double priceValue = Double.parseDouble(price);
+            if(priceValue <0){
+                throw new InvalidCertificateException(
+                        "The price ( "+priceValue+" ) can not be negative");
+            }
+        }catch(NumberFormatException e){
+            throw new InvalidCertificateException("Do not enter String ("+
+                    price+" )");
         }
 
         int updatePrice = giftCertificateRepository.updatePrice(
@@ -222,7 +229,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService{
             GiftCertificateEntity giftCertificateEntity = giftCertificateRepository.findById(id).get();
             return modelMapper.map(giftCertificateEntity, GiftCertificateGetResponse.class);
         }
-        throw new DataNotFoundException("cannot find gift certificate with id: " + id);
+        throw new DataNotFoundException("gift certificate ( id = " + id+" ) not found");
     }
 
     @Override

@@ -20,7 +20,6 @@ public class GiftCertificateUpdateRequest {
     private String description;
     @Nullable
     private String price;
-    @Positive(message = "duration should be positive")
     private String  duration;
     private List<TagEntity> tagEntities;
 }
