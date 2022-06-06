@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -16,10 +17,12 @@ import java.util.List;
 @Getter
 @Setter
 public class GiftCertificateUpdateRequest {
+    @NotBlank(message = "name can not be empty")
     private String name;
     private String description;
-    @Nullable
+    @NotBlank(message = "price can not be empty")
     private String price;
-    private String  duration;
+    @NotBlank(message = "duration can not be empty")
+    private String duration;
     private List<TagEntity> tagEntities;
 }

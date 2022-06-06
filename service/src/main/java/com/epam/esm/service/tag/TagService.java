@@ -12,6 +12,8 @@ import java.util.List;
 public interface TagService extends BaseService<TagPostRequest, TagGetResponse> {
     List<TagGetResponse> getAll(int limit, int offset);
 
+    int delete(Long tagId);
+
     MostUsedTagResponse getMostWidelyUsedTagsOfUser();
 
 }

@@ -18,7 +18,7 @@ import javax.validation.constraints.Positive;
 
 @Entity
 @Table(name = "users")
-public class UserEntity extends BaseEntity{
+public class UserEntity extends BaseEntity {
 
     private String name;
     private int age;

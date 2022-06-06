@@ -23,38 +23,38 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping("/api/v1/gift_certificate")
+@RequestMapping("/api/v1/gift-certificates")
 @AllArgsConstructor
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
 
-    @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> create(
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<GiftCertificateGetResponse> create(
             @Valid @RequestBody GiftCertificatePostRequest createCertificate,
             BindingResult bindingResult
     ) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             throw new InvalidInputException(bindingResult);
-
+        }
         GiftCertificateGetResponse response = giftCertificateService.create(createCertificate);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BaseResponse<>(HttpStatus.CREATED.value(), "certificate created", response));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 
-    @GetMapping(value = "/get", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
-    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> get(
-            @RequestParam Long id
+    public GiftCertificateGetResponse get(
+            @PathVariable Long id
+
     ) {
         GiftCertificateGetResponse response = giftCertificateService.get(id);
         addLinkForOrders(response);
-        return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(),
-                "gift certificate", response));
+        return response;
     }
 
-    @GetMapping(value = "/get-all", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<List<GiftCertificateGetResponse>>> getAll(
+    @GetMapping(value = "/", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public BaseResponse<List<GiftCertificateGetResponse>> getAll(
             @RequestParam(required = false, name = "search_word", defaultValue = "") String searchWord,
             @RequestParam(required = false, name = "tag_name", defaultValue = "") String tagName,
             @RequestParam(required = false, name = "do_name_sort") boolean doNameSort,
@@ -64,9 +64,6 @@ public class GiftCertificateController {
             @RequestParam(required = false, name = "pageNo", defaultValue = "1") int pageNo
 
     ) {
-
-        if (pageNo < 1 || pageSize < 0)
-            throw new InvalidCertificateException("Please enter valid number");
         List<GiftCertificateGetResponse> certificates = giftCertificateService.getAll(
                 searchWord, tagName, doNameSort, doDateSort, isDescending, pageSize, pageNo);
         for (GiftCertificateGetResponse certificate : certificates) {
@@ -86,18 +83,15 @@ public class GiftCertificateController {
                     .getAll(searchWord, tagName, doNameSort, doDateSort, isDescending, pageSize, pageNo - 1))
                     .withRel("previous page"));
         }
-
-
-        return ResponseEntity.ok(response);
+        return response;
     }
 
-    @GetMapping(value = "/get/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<List<GiftCertificateGetResponse>>> getWithMultipleTags(
+    @GetMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public BaseResponse<List<GiftCertificateGetResponse>> getWithMultipleTags(
             @RequestParam(value = "tag") List<String> tags,
             @RequestParam(defaultValue = "5") int pageSize,
             @RequestParam(defaultValue = "1") int pageNo) {
-        if (pageNo < 1 || pageSize < 0)
-            throw new InvalidCertificateException("Please enter valid number");
+
         List<GiftCertificateGetResponse> certificates
                 = giftCertificateService.searchWithMultipleTags(tags, pageSize, pageNo);
         for (GiftCertificateGetResponse certificate : certificates) {
@@ -116,48 +110,54 @@ public class GiftCertificateController {
                     .getWithMultipleTags(tags, pageSize, pageNo - 1))
                     .withRel("previous page"));
         }
-        return ResponseEntity.ok(response);
+        return response;
     }
 
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<BaseResponse> delete(
-            @RequestParam Long id) {
+    @DeleteMapping(value = "/{id}")
+    public String delete(
+            @PathVariable Long id) {
         int delete = giftCertificateService.delete(id);
+        // it returns here integer, because in the service layer I catch for another exception
+        //Named BreakingDataRelationshipException,to catch "id not found" exception
+        // I had to throw here in the controller, I came to this solution
         if (delete == 1)
-            return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(), "certificate deleted", null));
+            return "gift-certificate deleted successfully";
         throw new DataNotFoundException("Certificate ( id = " + id + " ) not found to delete");
+
+
     }
 
-    @PutMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE},
+    @PutMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> update(
+    public ResponseEntity<GiftCertificateGetResponse> update(
+            @PathVariable(value = "id") Long certificateId,
             @Valid @RequestBody GiftCertificateUpdateRequest update,
-            BindingResult bindingResult,
-            @RequestParam(value = "id") Long certificateId) {
-        if (bindingResult.hasErrors())
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             throw new InvalidInputException(bindingResult);
+        }
         GiftCertificateGetResponse response = giftCertificateService.update(update, certificateId);
         addLinkForOrders(response);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
-                "certificate updated", response));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/update/duration", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> updateDuration(
-            @RequestParam String duration,
-            @RequestParam Long id) {
+    @PatchMapping(value = "/duration/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<GiftCertificateGetResponse> updateDuration(
+            @PathVariable Long id,
+            @RequestParam String duration) {
         GiftCertificateGetResponse response = giftCertificateService.updateDuration(duration, id);
         addLinkForOrders(response);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), "duration updated", response));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/update/price", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<GiftCertificateGetResponse>> updatePrice(
-            @RequestParam String price,
-            @RequestParam Long id) {
+    @PatchMapping(value = "/price/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<GiftCertificateGetResponse> updatePrice(
+            @PathVariable Long id,
+            @RequestParam String price
+    ) {
         GiftCertificateGetResponse response = giftCertificateService.updatePrice(price, id);
         addLinkForOrders(response);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(), "price updated", response));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     private static void addLinkForOrders(GiftCertificateGetResponse certificate) {

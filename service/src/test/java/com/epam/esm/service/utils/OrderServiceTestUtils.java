@@ -87,7 +87,7 @@ public class OrderServiceTestUtils {
         return order;
     }
 
-    public static OrderGetResponse getOrderResponse(){
+    public static OrderGetResponse getOrderResponse() {
         OrderGetResponse order = new OrderGetResponse();
         order.setId(1L);
         order.setPrice(new BigDecimal("10.2"));

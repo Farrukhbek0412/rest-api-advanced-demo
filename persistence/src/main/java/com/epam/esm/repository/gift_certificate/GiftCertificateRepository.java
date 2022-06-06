@@ -2,7 +2,7 @@ package com.epam.esm.repository.gift_certificate;
 
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
-import com.epam.esm.repository.CRUDRepository;
+import com.epam.esm.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -10,7 +10,11 @@ import java.util.List;
 
 @Repository
 public interface GiftCertificateRepository
-        extends CRUDRepository<GiftCertificateEntity, Long>, GiftCertificateQueries {
+        extends BaseRepository<GiftCertificateEntity, Long>, GiftCertificateQueries {
+
+    GiftCertificateEntity update(GiftCertificateEntity certificateUpdate);
+
+    int delete(Long id);
 
     int updateDuration(int duration, Long id);
 
@@ -50,23 +54,23 @@ public interface GiftCertificateRepository
             int pageNo
     );
 
-    default String getSorting(boolean doNameSort, boolean doDateSort, boolean isDescending){
-        if (doNameSort){
-            if(doDateSort){
-                if(isDescending)
-                    return ORDER_NAME_DATE_DESC;
-                return ORDER_NAME_DATE;
-            }
-            if(isDescending)
-                return ORDER_NAME_DESC;
-            return ORDER_NAME;
+    default String getSorting(boolean doNameSort, boolean doDateSort, boolean isDescending) {
+        if (doNameSort && doDateSort && isDescending) {
+            return ORDER_NAME_DATE_DESC;
         }
-        else if(doDateSort){
-            if(isDescending){
-                return ORDER_DATE_DESC;
-            }
+        if (doNameSort && doDateSort) {
+            return ORDER_NAME_DATE;
+        }
+        if (doNameSort && isDescending) {
+            return ORDER_NAME_DESC;
+        }
+        if (doNameSort) return ORDER_NAME;
+
+        if (doDateSort && isDescending) {
+            return ORDER_DATE_DESC;
+        } else if (doDateSort) {
             return ORDER_DATE;
-        }else
+        } else
             return NO_ORDER;
     }
 }

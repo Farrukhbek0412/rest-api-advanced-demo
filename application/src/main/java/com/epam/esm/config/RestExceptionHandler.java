@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
@@ -103,8 +104,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 new BaseExceptionResponse(HttpStatus.BAD_REQUEST.value(),
                         e.getMessage(), ErrorCodeConstraints.BAD_REQUEST_CODE));
     }
-    @Override
 
+    @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
@@ -124,6 +125,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         ErrorCodeConstraints.BAD_REQUEST_CODE)
         );
     }
+
     @Override
     public ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpHeaders headers,

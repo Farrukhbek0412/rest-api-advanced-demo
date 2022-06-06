@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "orders")
-public class OrderEntity extends BaseEntity{
+public class OrderEntity extends BaseEntity {
 
     private BigDecimal price;
 

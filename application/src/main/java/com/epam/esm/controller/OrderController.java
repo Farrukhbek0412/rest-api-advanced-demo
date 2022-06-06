@@ -20,34 +20,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/api/v1/order/")
+@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping(value = "/create", produces = {MediaType.APPLICATION_JSON_VALUE},
+    @PostMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<OrderGetResponse>> create(
+    public ResponseEntity<OrderGetResponse> create(
             @Valid @RequestBody OrderPostRequest orderPostRequest,
             BindingResult bindingResult
     ) {
-        if (bindingResult.hasErrors())
+        if (bindingResult.hasErrors()) {
             throw new InvalidInputException(bindingResult);
+        }
         OrderGetResponse response = orderService.create(orderPostRequest);
-        return ResponseEntity.status(201)
-                .body(new BaseResponse<>(
-                        HttpStatus.CREATED.value(), "certificate ordered", response));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/get/by-user",
+    @GetMapping(value = "/users/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<List<OrderGetResponse>>> getOrdersByUser(
-            @RequestParam Long id,
+    public BaseResponse<List<OrderGetResponse>> getOrdersByUser(
+            @PathVariable Long id,
             @RequestParam(defaultValue = "5") int pageSize,
             @RequestParam(defaultValue = "1") int pageNo
     ) {
-        if (pageNo < 1 || pageSize < 0)
-            throw new InvalidCertificateException("Please enter valid number");
         List<OrderGetResponse> responses = orderService.getOrdersByUserId(id, pageSize, pageNo);
         BaseResponse<List<OrderGetResponse>> response = new BaseResponse<>(
                 HttpStatus.OK.value(), "user orders", responses);
@@ -63,19 +60,16 @@ public class OrderController {
                     .withRel("previous page"));
         }
 
-        return ResponseEntity.ok(response);
+        return response;
     }
 
-    @GetMapping(value = "/get/by-certificate",
+    @GetMapping(value = "/certificates/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<BaseResponse<List<OrderGetResponse>>> getOrdersByCertificate(
-            @RequestParam Long id,
+    public BaseResponse<List<OrderGetResponse>> getOrdersByCertificate(
+            @PathVariable Long id,
             @RequestParam(defaultValue = "5") int pageSize,
             @RequestParam(defaultValue = "1") int pageNo
     ) {
-
-        if (pageNo < 1 || pageSize < 0)
-            throw new InvalidCertificateException("Please enter valid number");
         List<OrderGetResponse> certificateOrders = orderService.getByCertificateId(id, pageSize, pageNo);
 
         BaseResponse<List<OrderGetResponse>> response = new BaseResponse<>(
@@ -91,17 +85,16 @@ public class OrderController {
                     .getOrdersByCertificate(id, pageSize, pageNo - 1))
                     .withRel("previous page"));
         }
-        return ResponseEntity.ok(response);
+        return response;
     }
 
-    @GetMapping(value = "/get/by-user-order")
-    public ResponseEntity<BaseResponse<OrderGetResponse>> getOrder(
-            @RequestParam Long userId,
-            @RequestParam Long orderId
+    @GetMapping(value = "/users/{userId}/orders/{orderId}")
+    public OrderGetResponse getOrder(
+            @PathVariable Long userId,
+            @PathVariable Long orderId
     ) {
         OrderGetResponse order = orderService.getByUserIdAndOrderId(userId, orderId);
-        return ResponseEntity.ok(new BaseResponse<>(HttpStatus.OK.value(),
-                "order retrieved", order));
+        return order;
     }
 }
 

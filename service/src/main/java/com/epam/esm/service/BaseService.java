@@ -5,5 +5,5 @@ public interface BaseService<Post, Get> {
 
     Get get(Long id);
 
-    int delete(Long id);
+
 }

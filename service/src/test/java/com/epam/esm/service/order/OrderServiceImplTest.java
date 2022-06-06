@@ -58,7 +58,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void create() {
+    void createReturnsNonNullResultTest() {
         when(userRepository.findById(postRequest.getUserId())).thenReturn(Optional.of(getUser()));
         when(giftCertificateRepository.findById(postRequest.getCertificateId()))
                 .thenReturn(Optional.of(getGiftCertificateEntity()));
@@ -69,20 +69,22 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void get() {
+    void getByIdResponseResultTest() {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(modelMapper.map(entity, OrderGetResponse.class)).thenReturn(response);
         OrderGetResponse response = orderService.get(1L);
         assertEquals(new BigDecimal("10.2"), response.getPrice());
     }
+
     @Test
-    public void testGetOrderThrowsException() {
+    public void getOrderByIdThrowsExceptionTest() {
         when(orderRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(DataNotFoundException.class, () -> orderService.get(1L));
         verify(orderRepository, times(1)).findById(1L);
     }
+
     @Test
-    void getOrdersByUserId() {
+    void getOrdersByUserIdTest() {
         List<OrderEntity> orders = getOrders();
         when(orderRepository.getOrdersByUserId(1L, 5, 0)).thenReturn(orders);
         when(modelMapper.map(orders, new TypeToken<List<OrderGetResponse>>() {
@@ -92,7 +94,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void getByUserIdAndOrderId() {
+    void getByUserIdAndOrderIdTest() {
         when(orderRepository.getByUserIdAndOrderId(1L, 1L)).thenReturn(Optional.of(entity));
         when(modelMapper.map(entity, OrderGetResponse.class)).thenReturn(response);
         OrderGetResponse order = orderService.getByUserIdAndOrderId(1L, 1L);
@@ -100,7 +102,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void getByCertificateId() {
+    void getByCertificateIdTest() {
         List<OrderEntity> orders = getOrders();
         when(orderRepository.getByCertificateId(1L, 5, 0)).thenReturn(orders);
         when(modelMapper.map(orders, new TypeToken<List<OrderGetResponse>>() {

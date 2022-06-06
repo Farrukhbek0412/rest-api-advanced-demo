@@ -17,7 +17,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     public OrderEntity create(OrderEntity order) {
         entityManager.persist(order);
         long id = order.getId();
-        if(id != 0)
+        if (id != 0)
             return order;
         return null;
     }
@@ -33,20 +33,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Optional<OrderEntity> findById(Long orderId) {
         OrderEntity orderEntity = entityManager.find(OrderEntity.class, orderId);
-        if(orderEntity != null)
-            return Optional.ofNullable(orderEntity);
-        return Optional.empty();
+        return Optional.ofNullable(orderEntity);
     }
 
-    @Override
-    public OrderEntity update(OrderEntity obj) {
-        return null;
-    }
-
-    @Override
-    public int delete(Long aLong) {
-        return 0;
-    }
 
     @Override
     public List<OrderEntity> getOrdersByUserId(Long userId, int pageSize, int pageNo) {
@@ -59,7 +48,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<OrderEntity> getByUserIdAndOrderId(Long userId, Long orderId){
+    public Optional<OrderEntity> getByUserIdAndOrderId(Long userId, Long orderId) {
         List<OrderEntity> orders = entityManager
                 .createQuery(
                         GET_ORDER_BY_USER_ID_AND_ORDER_ID, OrderEntity.class)
@@ -67,7 +56,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .setParameter("orderId", orderId)
                 .getResultList();
 
-        if(orders.isEmpty())
+        if (orders.isEmpty())
             return Optional.empty();
         return Optional.of(orders.get(0));
     }
@@ -92,7 +81,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .setParameter("userId", userId)
                 .getResultList();
 
-        if(resultList.isEmpty())
+        if (resultList.isEmpty())
             return Optional.empty();
         return Optional.of(resultList.get(0));
     }

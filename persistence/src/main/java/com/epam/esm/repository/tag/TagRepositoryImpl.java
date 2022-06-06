@@ -36,14 +36,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Optional<TagEntity> findById(Long id) {
         TagEntity tagEntity = entityManager.find(TagEntity.class, id);
-        if (tagEntity != null)
-            return Optional.of(tagEntity);
-        return Optional.empty();
-    }
-
-    @Override
-    public TagEntity update(TagEntity obj) {
-        return null;
+        return Optional.ofNullable(tagEntity);
     }
 
     @Override
@@ -55,12 +48,12 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public TagEntity findByName(String name) {
+    public Optional<TagEntity> findByName(String name) {
         try {
-            return entityManager.createQuery(FIND_BY_NAME, TagEntity.class)
-                    .setParameter("name", name).getSingleResult();
+            return Optional.of(entityManager.createQuery(FIND_BY_NAME, TagEntity.class)
+                    .setParameter("name", name).getSingleResult());
         } catch (NoResultException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

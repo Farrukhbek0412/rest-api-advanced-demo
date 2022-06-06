@@ -45,7 +45,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
+    void createUserNonNullResultTest() {
         when(modelMapper.map(userPostRequest, UserEntity.class)).thenReturn(userEntity);
         when(userRepository.create(userEntity)).thenReturn(userEntity);
         when(modelMapper.map(userEntity, UserGetResponse.class)).thenReturn(userGetResponse);
@@ -55,24 +55,26 @@ class UserServiceImplTest {
     }
 
     @Test
-    void get() {
+    void getByResponseResultTest() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
         when(modelMapper.map(userEntity, UserGetResponse.class)).thenReturn(userGetResponse);
 
         UserGetResponse userGetResponse = userService.get(1L);
         assertEquals("email", userGetResponse.getEmail());
     }
+
     @Test
     public void testGetUserThrowsException() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(DataNotFoundException.class, () -> userService.get(1L));
         verify(userRepository, times(1)).findById(1L);
     }
+
     @Test
-    void getAll() {
+    void getAllResultTest() {
         when(userRepository.getAll(10, 0)).thenReturn(List.of(userEntity));
-        when( modelMapper.map(List.of(userEntity), new TypeToken<List<UserGetResponse>>()
-        {}.getType())).thenReturn(List.of(userGetResponse));
+        when(modelMapper.map(List.of(userEntity), new TypeToken<List<UserGetResponse>>() {
+        }.getType())).thenReturn(List.of(userGetResponse));
 
         List<UserGetResponse> all = userService.getAll(10, 0);
         assertEquals(1, all.size());

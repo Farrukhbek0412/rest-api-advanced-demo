@@ -54,7 +54,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void canCreateCertificate() {
+    void canCreateCertificateTest() {
         when(giftCertificateRepository.create(entity)).thenReturn(entity);
         when(modelMapper.map(postRequest, GiftCertificateEntity.class)).thenReturn(entity);
         when(modelMapper.map(entity, GiftCertificateGetResponse.class)).thenReturn(getResponse);
@@ -64,7 +64,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void canGetById() {
+    void canGetByIdResultTest() {
         when(giftCertificateRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(modelMapper.map(entity, GiftCertificateGetResponse.class)).thenReturn(getResponse);
         GiftCertificateGetResponse response = giftCertificateService.get(1L);
@@ -73,13 +73,13 @@ class GiftCertificateServiceImplTest {
     }
 
 
-
     @Test
-    void canDeleteById() {
+    void canDeleteByIdResultTest() {
         when(giftCertificateRepository.delete(1L)).thenReturn(1);
         int delete = giftCertificateService.delete(1L);
         assertEquals(1, delete);
     }
+
     @Test
     public void testDeleteGiftCertificateThrowsException() {
         when(giftCertificateRepository.delete(1L)).thenReturn(0);
@@ -87,14 +87,15 @@ class GiftCertificateServiceImplTest {
         assertThrows(BreakingDataRelationshipException.class, () -> giftCertificateService.delete(10L));
         verify(giftCertificateRepository, times(1)).delete(10L);
     }
+
     @Test
-    void canGetAll() {
+    void canGetAllResultTest() {
         List<GiftCertificateEntity> giftCertificateEntities = getGiftCertificateEntities();
         List<GiftCertificateGetResponse> giftCertificateGetResponses = getGiftCertificateGetResponses();
         TagEntity tagEntity = getTestTagEntity();
 
 
-        when(tagRepository.findByName("java")).thenReturn(tagEntity);
+        when(tagRepository.findByName("java")).thenReturn(Optional.of(tagEntity));
         when(giftCertificateRepository.getAllOnly(false, false, false, 3, 0))
                 .thenReturn(giftCertificateEntities);
         when(giftCertificateRepository
@@ -105,11 +106,14 @@ class GiftCertificateServiceImplTest {
                         "Kid", 1L, false, false, false, 1, 0))
                 .thenReturn(giftCertificateEntities.subList(1, 2));
 
-        when(modelMapper.map(giftCertificateEntities, new TypeToken<List<GiftCertificateGetResponse>>(){}.getType()))
+        when(modelMapper.map(giftCertificateEntities, new TypeToken<List<GiftCertificateGetResponse>>() {
+        }.getType()))
                 .thenReturn(giftCertificateGetResponses);
-        when(modelMapper.map(giftCertificateEntities.subList(0, 1), new TypeToken<List<GiftCertificateGetResponse>>(){}.getType()))
+        when(modelMapper.map(giftCertificateEntities.subList(0, 1), new TypeToken<List<GiftCertificateGetResponse>>() {
+        }.getType()))
                 .thenReturn(giftCertificateGetResponses.subList(0, 1));
-        when(modelMapper.map(giftCertificateEntities.subList(1, 2), new TypeToken<List<GiftCertificateGetResponse>>(){}.getType()))
+        when(modelMapper.map(giftCertificateEntities.subList(1, 2), new TypeToken<List<GiftCertificateGetResponse>>() {
+        }.getType()))
                 .thenReturn(giftCertificateGetResponses.subList(1, 2));
 
         List<GiftCertificateGetResponse> allWithoutSearch = giftCertificateService.
@@ -126,7 +130,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void canUpdateCertificate() {
+    void canUpdateCertificateResultTest() {
         GiftCertificateUpdateRequest update = getGiftCertificateUpdateRequest();
         GiftCertificateEntity old = getGiftCertificateEntity();
 
@@ -142,7 +146,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void updateDuration() {
+    void updateDurationResultTest() {
         when(giftCertificateRepository.updateDuration(10, 1L)).thenReturn(1);
         when(giftCertificateRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(modelMapper.map(entity, GiftCertificateGetResponse.class)).thenReturn(getResponse);
@@ -153,7 +157,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void updatePrice() {
+    void updatePriceResultTest() {
         when(giftCertificateRepository.updatePrice(BigDecimal.valueOf(1.0), 1L)).thenReturn(1);
         when(giftCertificateRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(modelMapper.map(entity, GiftCertificateGetResponse.class)).thenReturn(getResponse);
@@ -164,16 +168,17 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void searchWithMultipleTags() {
+    void searchWithMultipleTagsResultTest() {
         List<String> tags = List.of("tag");
         List<TagEntity> tagEntities = List.of(getTestTagEntity());
         List<GiftCertificateEntity> giftCertificateEntities = getGiftCertificateEntities();
         List<GiftCertificateGetResponse> giftCertificateGetResponses = getGiftCertificateGetResponses();
 
-        when(tagRepository.findByName("tag")).thenReturn(tagEntities.get(0));
+        when(tagRepository.findByName("tag")).thenReturn(Optional.of(tagEntities.get(0)));
         when(giftCertificateRepository.searchWithMultipleTags(tagEntities, 1, 0))
                 .thenReturn(giftCertificateEntities);
-        when(modelMapper.map(giftCertificateEntities, new TypeToken<List<GiftCertificateGetResponse>>() {}.getType()))
+        when(modelMapper.map(giftCertificateEntities, new TypeToken<List<GiftCertificateGetResponse>>() {
+        }.getType()))
                 .thenReturn(giftCertificateGetResponses);
 
         List<GiftCertificateGetResponse> giftCertificateGetResponses1

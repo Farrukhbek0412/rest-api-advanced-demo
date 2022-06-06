@@ -11,14 +11,14 @@ import java.util.Optional;
 
 
 @Repository
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public UserEntity create(UserEntity userEntity) {
         entityManager.persist(userEntity);
-        if(userEntity.getId() != null)
+        if (userEntity.getId() != null)
             return userEntity;
         return null;
     }
@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository{
     @Override
     public Optional<UserEntity> findById(Long id) {
         UserEntity userEntity = entityManager.find(UserEntity.class, id);
-        if(userEntity != null)
+        if (userEntity != null)
             return Optional.of(userEntity);
         return Optional.empty();
     }
@@ -53,13 +53,4 @@ public class UserRepositoryImpl implements UserRepository{
         }
     }
 
-    @Override
-    public UserEntity update(UserEntity obj) {
-        return null;
-    }
-
-    @Override
-    public int delete(Long id) {
-        return 0;
-    }
 }

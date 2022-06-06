@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrderGetResponse{
+public class OrderGetResponse {
     private Long id;
     private UserEntity user;
     private BigDecimal price;

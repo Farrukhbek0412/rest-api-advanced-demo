@@ -41,7 +41,7 @@ class TagServiceImplTest {
     private TagPostRequest tagPostRequest;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         tag = new TagEntity();
         tag.setName("test tag");
 
@@ -53,7 +53,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void canCreateTag(){
+    void canCreateTagResultTest() {
         when(tagRepository.create(tag)).thenReturn(tag);
         when(modelMapper.map(tag, TagGetResponse.class)).thenReturn(tagGetResponse);
         when(modelMapper.map(tagPostRequest, TagEntity.class)).thenReturn(tag);
@@ -64,7 +64,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void canGetTagById(){
+    void canGetTagByIdResultTest() {
         when(tagRepository.findById(1L)).thenReturn(Optional.of(tag));
         when(modelMapper.map(tag, TagGetResponse.class)).thenReturn(tagGetResponse);
 
@@ -74,11 +74,12 @@ class TagServiceImplTest {
     }
 
     @Test
-    void canGetAll(){
+    void canGetAllResultTest() {
         List<TagEntity> tagEntities = getTagEntities();
         List<TagGetResponse> tagGetResponses = getTagGetResponses();
         when(tagRepository.getAll(5, 0)).thenReturn(tagEntities);
-        when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>(){}.getType()))
+        when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>() {
+        }.getType()))
                 .thenReturn(tagGetResponses);
 
         List<TagGetResponse> all = tagService.getAll(5, 0);
@@ -87,11 +88,12 @@ class TagServiceImplTest {
     }
 
     @Test
-    void canDeleteById(){
+    void canDeleteByIdResultTest() {
         when(tagRepository.delete(1L)).thenReturn(1);
         int delete = tagService.delete(1L);
         assertEquals(1, delete);
     }
+
     @Test
     public void testDeleteTagThrowsException() {
         when(tagRepository.delete(2L)).thenReturn(0);
@@ -99,18 +101,20 @@ class TagServiceImplTest {
         assertThrows(DataNotFoundException.class, () -> tagService.delete(2L));
         verify(tagRepository, times(1)).delete(2L);
     }
+
     @Test
-    void canGetMostWidelyUsedTagsOfUser(){
+    void canGetMostWidelyUsedTagsOfUserTest() {
         List<TagEntity> tagEntities = getTagEntities();
         List<TagGetResponse> tagGetResponses = getTagGetResponses();
         when(tagRepository.getMostWidelyUsedTagOfUser()).thenReturn(tagEntities);
-        when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>() {}.getType()))
+        when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>() {
+        }.getType()))
                 .thenReturn(tagGetResponses);
         when(tagRepository.getCountOfMostWidelyUsedTagCount()).thenReturn(BigInteger.ONE);
 
         MostUsedTagResponse mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser();
         assertEquals(tagGetResponses, mostWidelyUsedTagsOfUser.getTags());
-        assertEquals(BigInteger.ONE,mostWidelyUsedTagsOfUser.getCount());
+        assertEquals(BigInteger.ONE, mostWidelyUsedTagsOfUser.getCount());
     }
 
 

@@ -20,11 +20,12 @@ import java.util.List;
 @Setter
 public class GiftCertificatePostRequest {
     @NotBlank(message = "name can not be empty")
-    @NotNull(message = "name can not be null")
     private String name;
     @NotBlank(message = "description can not be null or empty")
     private String description;
+    @NotBlank(message = "price can not be empty")
     private String price;
+    @NotBlank(message = "duration can not be empty")
     private String duration;
     private List<TagEntity> tagEntities;
 }
