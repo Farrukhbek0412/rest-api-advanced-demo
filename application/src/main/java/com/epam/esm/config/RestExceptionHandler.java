@@ -14,6 +14,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -22,20 +23,14 @@ import javax.validation.ConstraintViolationException;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ClassNotFoundException.class)
-    public ResponseEntity<BaseExceptionResponse> classNotFoundExceptionHandler(ClassNotFoundException e) {
-        return ResponseEntity.badRequest().body(
-                new BaseExceptionResponse(HttpStatus.NOT_FOUND.value(),
+
+    @ExceptionHandler({ClassNotFoundException.class,PSQLException.class})
+    public ResponseEntity<BaseExceptionResponse> classNotFoundExceptionHandler(Exception e) {
+        return ResponseEntity.badRequest()
+                .body(new BaseExceptionResponse(HttpStatus.NOT_FOUND.value(),
                         "Internal error,Please, try again", ErrorCodeConstraints.INTERNAL_CODE));
     }
 
-
-    @ExceptionHandler(PSQLException.class)
-    public ResponseEntity<BaseExceptionResponse> psqlExceptionHandler(PSQLException e) {
-        return ResponseEntity.badRequest().body(
-                new BaseExceptionResponse(HttpStatus.BAD_REQUEST.value(),
-                        "Internal error,Please, try again", ErrorCodeConstraints.INTERNAL_CODE));
-    }
 
     @ExceptionHandler(DataAlreadyExistException.class)
     public ResponseEntity<BaseExceptionResponse> tagAlreadyExistExceptionHandler(DataAlreadyExistException e) {
@@ -61,8 +56,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidUserException.class)
     public ResponseEntity<BaseExceptionResponse> invalidUserExceptionHandler(InvalidUserException e) {
-        return ResponseEntity.badRequest().body(
-                new BaseExceptionResponse(HttpStatus.BAD_REQUEST.value(),
+        return ResponseEntity.badRequest()
+                .body(new BaseExceptionResponse(HttpStatus.BAD_REQUEST.value(),
                         e.getMessage(), ErrorCodeConstraints.BAD_REQUEST_CODE));
     }
 

@@ -4,6 +4,7 @@ import com.epam.esm.dto.response.MostUsedTagResponse;
 import com.epam.esm.dto.response.TagGetResponse;
 import com.epam.esm.dto.request.TagPostRequest;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.exception.BreakingDataRelationshipException;
 import com.epam.esm.exception.DataAlreadyExistException;
 import com.epam.esm.exception.DataNotFoundException;
 import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
@@ -54,12 +55,18 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public int delete(Long tagId) {
+    public void delete(Long tagId) {
 
-        int i = tagRepository.delete(tagId);
-        if (i != 1)
-            throw new DataNotFoundException("Tag ( id = " + tagId + " ) not found to delete");
-        return i;
+        try {
+            int delete = tagRepository.delete(tagId);
+
+            if (delete != 1) {
+                throw new DataNotFoundException("tag ( id= " + tagId + " ) not found to delete");
+            }
+        } catch (Exception e) {
+            throw new BreakingDataRelationshipException("this tag is " +
+                    "use by many certificates, so it cannot be deleted");
+        }
     }
 
 

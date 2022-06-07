@@ -1,6 +1,7 @@
 package com.epam.esm.repository.order;
 
 import com.epam.esm.entity.OrderEntity;
+import com.epam.esm.exception.UnknownDataBaseException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,7 +26,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         long id = order.getId();
         if (id != 0)
             return order;
-        return null;
+        throw new UnknownDataBaseException("There was a problem while creating order, please, Try again!");
     }
 
     @Override

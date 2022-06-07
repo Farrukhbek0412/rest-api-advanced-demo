@@ -1,6 +1,7 @@
 package com.epam.esm.repository.user;
 
 import com.epam.esm.entity.UserEntity;
+import com.epam.esm.exception.UnknownDataBaseException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -23,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
         entityManager.persist(userEntity);
         if (userEntity.getId() != null)
             return userEntity;
-        return null;
+        throw new UnknownDataBaseException("There was a problem while creating user, please Try again!");
     }
 
     @Override

@@ -76,8 +76,7 @@ class GiftCertificateServiceImplTest {
     @Test
     void canDeleteByIdResultTest() {
         when(giftCertificateRepository.delete(1L)).thenReturn(1);
-        int delete = giftCertificateService.delete(1L);
-        assertEquals(1, delete);
+        assertEquals(1,giftCertificateRepository.delete(1L));
     }
 
     @Test

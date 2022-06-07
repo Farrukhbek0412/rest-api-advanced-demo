@@ -1,6 +1,7 @@
 package com.epam.esm.repository.tag;
 
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.exception.UnknownDataBaseException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,7 +26,7 @@ public class TagRepositoryImpl implements TagRepository {
         entityManager.persist(tagEntity);
         if (tagEntity.getId() != null)
             return tagEntity;
-        return null;
+        throw new  UnknownDataBaseException("There was a problem while creating tag, please Try again!");
     }
 
     @Override

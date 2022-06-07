@@ -116,13 +116,8 @@ public class GiftCertificateController {
     @DeleteMapping(value = "/{id}")
     public String delete(
             @PathVariable Long id) {
-        int delete = giftCertificateService.delete(id);
-        // it returns here integer, because in the service layer I catch for another exception
-        //Named BreakingDataRelationshipException,to catch "id not found" exception
-        // I had to throw here in the controller, I came to this solution
-        if (delete == 1)
-            return "gift-certificate deleted successfully";
-        throw new DataNotFoundException("Certificate ( id = " + id + " ) not found to delete");
+        giftCertificateService.delete(id);
+        return "gift-certificate deleted successfully";
 
 
     }

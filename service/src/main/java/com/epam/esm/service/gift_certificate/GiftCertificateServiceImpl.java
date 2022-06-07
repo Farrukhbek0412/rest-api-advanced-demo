@@ -60,15 +60,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public int delete(Long certificateId) {
-        int delete = 0;
+    public void delete(Long certificateId) {
         try {
-            delete = giftCertificateRepository.delete(certificateId);
+            int delete = giftCertificateRepository.delete(certificateId);
+
+            if (delete != 1) {
+                throw new DataNotFoundException("Certificate ( id = " + certificateId + " ) not found to delete");
+            }
         } catch (Exception e) {
             throw new BreakingDataRelationshipException("this certificate is " +
                     "ordered by many users, so it cannot be deleted");
         }
-        return delete;
     }
 
     @Override

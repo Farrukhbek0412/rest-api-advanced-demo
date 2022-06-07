@@ -90,7 +90,7 @@ class TagServiceImplTest {
     @Test
     void canDeleteByIdResultTest() {
         when(tagRepository.delete(1L)).thenReturn(1);
-        int delete = tagService.delete(1L);
+        int delete = tagRepository.delete(1L);
         assertEquals(1, delete);
     }
 

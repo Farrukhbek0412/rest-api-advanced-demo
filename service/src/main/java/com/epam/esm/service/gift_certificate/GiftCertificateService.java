@@ -14,7 +14,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificatePostR
             boolean isDescending, int pageSize, int pageNo
     );
 
-    int delete(Long id);
+    void delete(Long id);
 
     GiftCertificateGetResponse update(GiftCertificateUpdateRequest update, Long certificateId);
 

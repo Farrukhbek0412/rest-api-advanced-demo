@@ -2,6 +2,7 @@ package com.epam.esm.repository.gift_certificate;
 
 import com.epam.esm.entity.GiftCertificateEntity;
 import com.epam.esm.entity.TagEntity;
+import com.epam.esm.exception.UnknownDataBaseException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -24,7 +25,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         entityManager.persist(certificate);
         if (certificate.getId() != null)
             return certificate;
-        return null;
+        throw new UnknownDataBaseException("There was a problem while creating gift_certificate,Please try again!");
     }
 
     @Override
@@ -125,10 +126,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 builder.like(giftRoot.get("name"), "%" + searchWord + "%"));
 
         if (doNameSort) {
-            query.orderBy(doNameSorting(builder, giftRoot, doNameSort, isDescending));
+            query.orderBy(sortByName(builder, giftRoot, doNameSort, isDescending));
         }
         if (doDateSort) {
-            query.orderBy(doDateSorting(builder, giftRoot, doDateSort, isDescending));
+            query.orderBy(sortByDate(builder, giftRoot, doDateSort, isDescending));
         }
 
         return entityManager.createQuery(query)
@@ -137,7 +138,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 .getResultList();
     }
 
-    public Order doNameSorting(
+    public Order sortByName(
             CriteriaBuilder builder,
             Root<GiftCertificateEntity> root,
             boolean doNameSort,
@@ -149,7 +150,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     }
 
-    public Order doDateSorting(
+    public Order sortByDate(
             CriteriaBuilder builder,
             Root<GiftCertificateEntity> root,
             boolean doDateSort,
@@ -172,10 +173,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 builder.like(giftRoot.get("name"), "%" + searchWord + "%"));
 
         if (doNameSort) {
-            query.orderBy(doNameSorting(builder, giftRoot, doNameSort, isDescending));
+            query.orderBy(sortByName(builder, giftRoot, doNameSort, isDescending));
         }
         if (doDateSort) {
-            query.orderBy(doDateSorting(builder, giftRoot, doDateSort, isDescending));
+            query.orderBy(sortByDate(builder, giftRoot, doDateSort, isDescending));
         }
 
         return entityManager.createQuery(query)
@@ -190,10 +191,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         CriteriaQuery<GiftCertificateEntity> query = builder.createQuery(GiftCertificateEntity.class);
         Root<GiftCertificateEntity> giftRoot = query.from(GiftCertificateEntity.class);
         if (doNameSort) {
-            query.orderBy(doNameSorting(builder, giftRoot, doNameSort, isDescending));
+            query.orderBy(sortByName(builder, giftRoot, doNameSort, isDescending));
         }
         if (doDateSort) {
-            query.orderBy(doDateSorting(builder, giftRoot, doDateSort, isDescending));
+            query.orderBy(sortByDate(builder, giftRoot, doDateSort, isDescending));
         }
 
         return entityManager
