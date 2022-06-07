@@ -6,7 +6,7 @@ import com.epam.esm.repository.BaseRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderRepository extends BaseRepository<OrderEntity, Long>, OrderQueries {
+public interface OrderRepository extends BaseRepository<OrderEntity, Long> {
 
 
     List<OrderEntity> getOrdersByUserId(Long userId, int pageSize, int pageNo);

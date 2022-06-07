@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderGetResponse get(Long id) {
         Optional<OrderEntity> order = orderRepository.findById(id);
-        return Optional.ofNullable(modelMapper.map(order.get(), OrderGetResponse.class))
+        return order.map(orderEntity -> modelMapper.map(orderEntity, OrderGetResponse.class))
                 .orElseThrow(() -> new DataNotFoundException("order ( id = " + id + " ) not found"));
 
     }
@@ -65,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderGetResponse getByUserIdAndOrderId(Long userId, Long orderId) {
         Optional<OrderEntity> order = orderRepository.getByUserIdAndOrderId(userId, orderId);
-        return Optional.ofNullable(modelMapper.map(order.get(), OrderGetResponse.class))
+        return order.map(orderEntity -> modelMapper.map(orderEntity, OrderGetResponse.class))
                 .orElseThrow(() ->
                         new DataNotFoundException("no order found with id: " + orderId
                                 + " for this user"));

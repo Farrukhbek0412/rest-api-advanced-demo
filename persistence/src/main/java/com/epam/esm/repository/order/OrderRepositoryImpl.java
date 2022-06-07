@@ -4,8 +4,14 @@ import com.epam.esm.entity.OrderEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Repository
@@ -24,7 +30,12 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<OrderEntity> getAll(int pageSize, int pageNo) {
-        return entityManager.createQuery(GET_ALL_ORDERS, OrderEntity.class)
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> query = builder.createQuery(OrderEntity.class);
+        Root<OrderEntity> root = query.from(OrderEntity.class);
+        query.select(root);
+
+        return entityManager.createQuery(query)
                 .setFirstResult((pageNo - 1) * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
@@ -39,9 +50,15 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<OrderEntity> getOrdersByUserId(Long userId, int pageSize, int pageNo) {
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> query = builder.createQuery(OrderEntity.class);
+        Root<OrderEntity> root = query.from(OrderEntity.class);
+        root.fetch("user", JoinType.LEFT);
+        query.where(builder.equal(root.get("user").get("id"), userId));
+
         return entityManager
-                .createQuery(GET_ORDER_BY_USER_ID, OrderEntity.class)
-                .setParameter("id", userId)
+                .createQuery(query)
                 .setFirstResult((pageNo - 1) * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
@@ -49,23 +66,34 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Optional<OrderEntity> getByUserIdAndOrderId(Long userId, Long orderId) {
-        List<OrderEntity> orders = entityManager
-                .createQuery(
-                        GET_ORDER_BY_USER_ID_AND_ORDER_ID, OrderEntity.class)
-                .setParameter("userId", userId)
-                .setParameter("orderId", orderId)
-                .getResultList();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> query = builder.createQuery(OrderEntity.class);
+        Root<OrderEntity> root = query.from(OrderEntity.class);
+        query.where(builder.equal(root.get("user").get("id"), userId),
+                builder.equal(root.get("id"), orderId));
 
-        if (orders.isEmpty())
+        Optional<OrderEntity> orders;
+
+        try {
+            orders = Optional.ofNullable(entityManager
+                    .createQuery(query)
+                    .getSingleResult());
+            return orders;
+        } catch (NoResultException e) {
             return Optional.empty();
-        return Optional.of(orders.get(0));
+        }
     }
 
     @Override
     public List<OrderEntity> getByCertificateId(Long certificateId, int pageSize, int pageNo) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> query = builder.createQuery(OrderEntity.class);
+        Root<OrderEntity> root = query.from(OrderEntity.class);
+        root.fetch("certificate", JoinType.LEFT);
+        query.where(builder.equal(root.get("certificate").get("id"), certificateId));
+
         return entityManager
-                .createQuery(GET_ORDERS_BY_CERTIFICATE_ID, OrderEntity.class)
-                .setParameter("id", certificateId)
+                .createQuery(query)
                 .setFirstResult((pageNo - 1) * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
@@ -73,14 +101,15 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Optional<OrderEntity> getByUserIdAndCertificateId(Long userId, Long certificateId) {
-        List<OrderEntity> resultList
-                = entityManager.createQuery(
-                        GET_ORDER_BY_USER_ID_AND_CERTIFICATE_ID,
-                        OrderEntity.class)
-                .setParameter("certificateId", certificateId)
-                .setParameter("userId", userId)
-                .getResultList();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> query = builder.createQuery(OrderEntity.class);
+        Root<OrderEntity> root = query.from(OrderEntity.class);
+        query.where(
+                builder.equal(root.get("user").get("id"), userId),
+                builder.equal(root.get("certificate").get("id"), certificateId));
 
+        List<OrderEntity> resultList = entityManager.createQuery(query)
+                .getResultList();
         if (resultList.isEmpty())
             return Optional.empty();
         return Optional.of(resultList.get(0));

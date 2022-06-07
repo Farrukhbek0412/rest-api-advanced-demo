@@ -96,5 +96,14 @@ public class OrderController {
         OrderGetResponse order = orderService.getByUserIdAndOrderId(userId, orderId);
         return order;
     }
+
+
+    @GetMapping(value = "/{id}")
+    public OrderGetResponse get(
+            @PathVariable Long id
+    ) {
+        OrderGetResponse order = orderService.get(id);
+        return order;
+    }
 }
 

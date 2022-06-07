@@ -15,5 +15,5 @@ import java.util.List;
 public class MostUsedTagResponse {
 
     List<TagGetResponse> tags;
-    BigInteger count;
+    Integer count;
 }

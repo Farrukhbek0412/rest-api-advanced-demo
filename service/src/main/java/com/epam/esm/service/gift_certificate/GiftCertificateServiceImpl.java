@@ -52,7 +52,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificateGetResponse get(Long certificateId) {
         Optional<GiftCertificateEntity> certificate = giftCertificateRepository.findById(certificateId);
-        return Optional.ofNullable(modelMapper.map(certificate.get(), GiftCertificateGetResponse.class))
+        return certificate.map(gift -> modelMapper.map(gift, GiftCertificateGetResponse.class))
                 .orElseThrow(() ->
                         new DataNotFoundException("certificate ( id = " + certificateId + " ) not found"));
 

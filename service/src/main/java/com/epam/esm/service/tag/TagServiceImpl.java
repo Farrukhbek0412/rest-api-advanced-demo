@@ -48,7 +48,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagGetResponse get(Long tagId) {
         Optional<TagEntity> tag = tagRepository.findById(tagId);
-        return Optional.ofNullable(modelMapper.map(tag.get(), TagGetResponse.class))
+        return tag.map(tagEntity -> modelMapper.map(tagEntity, TagGetResponse.class))
                 .orElseThrow(() -> new DataNotFoundException("Tag ( id = " + tagId + " ) not found"));
     }
 
@@ -75,7 +75,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public MostUsedTagResponse getMostWidelyUsedTagsOfUser() {
         List<TagEntity> mostWidelyUserTagsOfUser = tagRepository.getMostWidelyUsedTagOfUser();
-        BigInteger count = tagRepository.getCountOfMostWidelyUsedTagCount();
+        Integer count = tagRepository.getCountOfMostWidelyUsedTagCount();
         if (mostWidelyUserTagsOfUser.isEmpty())
             throw new DataNotFoundException("this user haven't used any tags");
         MostUsedTagResponse mostUsedTagResponse = new MostUsedTagResponse();

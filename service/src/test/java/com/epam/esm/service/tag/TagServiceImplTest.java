@@ -110,11 +110,11 @@ class TagServiceImplTest {
         when(modelMapper.map(tagEntities, new TypeToken<List<TagGetResponse>>() {
         }.getType()))
                 .thenReturn(tagGetResponses);
-        when(tagRepository.getCountOfMostWidelyUsedTagCount()).thenReturn(BigInteger.ONE);
+        when(tagRepository.getCountOfMostWidelyUsedTagCount()).thenReturn(1);
 
         MostUsedTagResponse mostWidelyUsedTagsOfUser = tagService.getMostWidelyUsedTagsOfUser();
         assertEquals(tagGetResponses, mostWidelyUsedTagsOfUser.getTags());
-        assertEquals(BigInteger.ONE, mostWidelyUsedTagsOfUser.getCount());
+        assertEquals(1, mostWidelyUsedTagsOfUser.getCount());
     }
 
 

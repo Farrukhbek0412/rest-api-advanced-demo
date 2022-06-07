@@ -21,6 +21,7 @@ public class BaseEntity {
     @Column(updatable = false)
     private LocalDateTime createDate;
 
+    @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
     public BaseEntity() {

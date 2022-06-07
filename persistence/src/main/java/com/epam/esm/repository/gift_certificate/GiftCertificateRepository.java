@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface GiftCertificateRepository
-        extends BaseRepository<GiftCertificateEntity, Long>, GiftCertificateQueries {
+        extends BaseRepository<GiftCertificateEntity, Long> {
 
     GiftCertificateEntity update(GiftCertificateEntity certificateUpdate);
 
@@ -54,23 +54,4 @@ public interface GiftCertificateRepository
             int pageNo
     );
 
-    default String getSorting(boolean doNameSort, boolean doDateSort, boolean isDescending) {
-        if (doNameSort && doDateSort && isDescending) {
-            return ORDER_NAME_DATE_DESC;
-        }
-        if (doNameSort && doDateSort) {
-            return ORDER_NAME_DATE;
-        }
-        if (doNameSort && isDescending) {
-            return ORDER_NAME_DESC;
-        }
-        if (doNameSort) return ORDER_NAME;
-
-        if (doDateSort && isDescending) {
-            return ORDER_DATE_DESC;
-        } else if (doDateSort) {
-            return ORDER_DATE;
-        } else
-            return NO_ORDER;
-    }
 }

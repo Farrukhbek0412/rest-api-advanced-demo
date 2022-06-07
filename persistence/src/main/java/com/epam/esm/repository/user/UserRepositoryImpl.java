@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +28,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<UserEntity> getAll(int pageSize, int pageNo) {
-        return entityManager.createQuery(GET_ALL, UserEntity.class)
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> query = builder.createQuery(UserEntity.class);
+        Root<UserEntity> root = query.from(UserEntity.class);
+        query.select(root);
+        return entityManager.createQuery(query)
                 .setFirstResult((pageNo - 1) * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
@@ -42,10 +49,15 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> findByEmail(String email) {
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> query = builder.createQuery(UserEntity.class);
+        Root<UserEntity> root = query.from(UserEntity.class);
+        query.select(root).where(builder
+                .like(root.get("email"), "%" + email + "%"));
+
         try {
-            UserEntity userEntity = entityManager.createQuery(FIND_BY_EMAIL,
-                            UserEntity.class)
-                    .setParameter("email", email)
+            UserEntity userEntity = entityManager.createQuery(query)
                     .getSingleResult();
             return Optional.of(userEntity);
         } catch (NoResultException e) {

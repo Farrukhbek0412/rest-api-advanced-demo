@@ -4,7 +4,7 @@ import com.epam.esm.exception.gift_certificate.InvalidCertificateException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class DataValidatorImpl implements DataValidator{
     @Override
     public void validatePriceExist(String price) {

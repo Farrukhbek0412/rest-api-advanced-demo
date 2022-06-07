@@ -5,7 +5,7 @@ import com.epam.esm.repository.BaseRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends BaseRepository<UserEntity, Long>, UserQueries {
+public interface UserRepository extends BaseRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByEmail(String email);
 }
